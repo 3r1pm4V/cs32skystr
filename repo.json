@@ -1,0 +1,10 @@
+{
+  "name": "Vietnamese Streaming Hub",
+  "description": "Bộ sưu tập plugin phim Việt chất lượng cao — Phim lẻ, phim bộ, hoạt hình, anime Vietsub/Lồng tiếng từ các nguồn uy tín nhất Việt Nam.",
+  "manifestVersion": 2,
+  "author": "tearrs (ported to SkyStream)",
+  "iconUrl": "https://raw.githubusercontent.com/twitter/twemoji/master/assets/72x72/1f1fb-1f1f3.png",
+  "pluginLists": [
+    "./plugins.json"
+  ]
+}

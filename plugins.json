@@ -1,0 +1,110 @@
+[
+  {
+    "packageName": "com.tearrs.vietnamese.ophim",
+    "name": "OPhim",
+    "description": "Phim lẻ & phim bộ Vietsub / Lồng tiếng chất lượng cao từ OPhim API. Cập nhật nhanh, nội dung đa dạng.",
+    "version": "1.0.0",
+    "iconUrl": "https://ophim1.com/favicon.ico",
+    "baseUrl": "https://ophim1.com",
+    "pluginFile": "./ophim/plugin.js",
+    "language": "vi",
+    "types": ["movie", "series"],
+    "tags": ["vietsub", "lồng tiếng", "phim bộ", "phim lẻ"]
+  },
+  {
+    "packageName": "com.tearrs.vietnamese.kkphim",
+    "name": "KKPhim",
+    "description": "Nguồn phim KKPhim với API chuẩn, hỗ trợ Vietsub và Lồng tiếng. Đa thể loại, cập nhật liên tục.",
+    "version": "1.0.0",
+    "iconUrl": "https://phimapi.com/favicon.ico",
+    "baseUrl": "https://phimapi.com",
+    "pluginFile": "./kkphim/plugin.js",
+    "language": "vi",
+    "types": ["movie", "series"],
+    "tags": ["vietsub", "lồng tiếng", "kkphim"]
+  },
+  {
+    "packageName": "com.tearrs.vietnamese.nguonc",
+    "name": "NguonC",
+    "description": "NguonC.com — nguồn phim ổn định với đầy đủ phim bộ Hàn, Hoa, Việt và phim Hollywood.",
+    "version": "1.0.0",
+    "iconUrl": "https://api.nguonc.com/favicon.ico",
+    "baseUrl": "https://api.nguonc.com",
+    "pluginFile": "./nguonc/plugin.js",
+    "language": "vi",
+    "types": ["movie", "series"],
+    "tags": ["vietsub", "nguonc", "phim bộ"]
+  },
+  {
+    "packageName": "com.tearrs.vietnamese.motchill",
+    "name": "Motchill",
+    "description": "Motchill — xem phim chill, không quảng cáo, Vietsub nhanh nhất.",
+    "version": "1.0.0",
+    "iconUrl": "https://motchill.tv/favicon.ico",
+    "baseUrl": "https://motchill.tv",
+    "pluginFile": "./motchill/plugin.js",
+    "language": "vi",
+    "types": ["movie", "series"],
+    "tags": ["vietsub", "motchill", "phim chill"]
+  },
+  {
+    "packageName": "com.tearrs.vietnamese.phimchill",
+    "name": "PhimChill",
+    "description": "PhimChill — kho phim Việt đa dạng, tập trung vào phim chiếu rạp và phim hot.",
+    "version": "1.0.0",
+    "iconUrl": "https://phimchill.net/favicon.ico",
+    "baseUrl": "https://phimchill.net",
+    "pluginFile": "./phimchill/plugin.js",
+    "language": "vi",
+    "types": ["movie", "series"],
+    "tags": ["vietsub", "phimchill", "rạp chiếu"]
+  },
+  {
+    "packageName": "com.tearrs.vietnamese.animehay",
+    "name": "AnimeHay",
+    "description": "AnimeHay — xem anime Vietsub chất lượng cao, đầy đủ bộ cũ và mới nhất mùa này.",
+    "version": "1.0.0",
+    "iconUrl": "https://animehay.tv/favicon.ico",
+    "baseUrl": "https://animehay.tv",
+    "pluginFile": "./animehay/plugin.js",
+    "language": "vi",
+    "types": ["anime", "series"],
+    "tags": ["anime", "vietsub", "animehay"]
+  },
+  {
+    "packageName": "com.tearrs.vietnamese.animevietsub",
+    "name": "AnimeVietsub",
+    "description": "AnimeVietsub — chuyên anime Vietsub và Lồng tiếng, cộng đồng fansubber Việt.",
+    "version": "1.0.0",
+    "iconUrl": "https://animevietsub.tv/favicon.ico",
+    "baseUrl": "https://animevietsub.tv",
+    "pluginFile": "./animevietsub/plugin.js",
+    "language": "vi",
+    "types": ["anime"],
+    "tags": ["anime", "vietsub", "lồng tiếng"]
+  },
+  {
+    "packageName": "com.tearrs.vietnamese.bilutv",
+    "name": "BiluTV",
+    "description": "BiluTV — phim bộ Hoa ngữ, Hàn Quốc, Nhật Bản Vietsub tốc độ update nhanh nhất.",
+    "version": "1.0.0",
+    "iconUrl": "https://bilutv.org/favicon.ico",
+    "baseUrl": "https://bilutv.org",
+    "pluginFile": "./bilutv/plugin.js",
+    "language": "vi",
+    "types": ["series"],
+    "tags": ["vietsub", "hoa ngữ", "hàn quốc", "bilutv"]
+  },
+  {
+    "packageName": "com.tearrs.vietnamese.phim1080",
+    "name": "Phim1080",
+    "description": "Phim1080 — phim Full HD 1080p, Bluray. Chất lượng hình ảnh và âm thanh vượt trội.",
+    "version": "1.0.0",
+    "iconUrl": "https://phim1080.in/favicon.ico",
+    "baseUrl": "https://phim1080.in",
+    "pluginFile": "./phim1080/plugin.js",
+    "language": "vi",
+    "types": ["movie", "series"],
+    "tags": ["1080p", "bluray", "vietsub", "full hd"]
+  }
+]
