@@ -1,110 +1,152 @@
 [
   {
-    "packageName": "com.tearrs.vietnamese.ophim",
     "name": "OPhim",
-    "description": "Phim lẻ & phim bộ Vietsub / Lồng tiếng chất lượng cao từ OPhim API. Cập nhật nhanh, nội dung đa dạng.",
-    "version": "1.0.0",
-    "iconUrl": "https://ophim1.com/favicon.ico",
-    "baseUrl": "https://ophim1.com",
-    "pluginFile": "./ophim/plugin.js",
+    "internalName": "OPhim",
+    "url": "https://raw.githubusercontent.com/er1pm4v/cs32skystr/main/ophim.sky",
+    "icon": "https://ophim1.com/favicon.ico",
+    "version": 1,
+    "description": "Phim lẻ & phim bộ Vietsub / Lồng tiếng từ OPhim API. Cập nhật nhanh, nội dung đa dạng.",
+    "authors": [
+      "tearrs"
+    ],
     "language": "vi",
-    "types": ["movie", "series"],
-    "tags": ["vietsub", "lồng tiếng", "phim bộ", "phim lẻ"]
+    "types": [
+      "Movies",
+      "TV"
+    ],
+    "baseUrl": "https://ophim1.com"
   },
   {
-    "packageName": "com.tearrs.vietnamese.kkphim",
     "name": "KKPhim",
-    "description": "Nguồn phim KKPhim với API chuẩn, hỗ trợ Vietsub và Lồng tiếng. Đa thể loại, cập nhật liên tục.",
-    "version": "1.0.0",
-    "iconUrl": "https://phimapi.com/favicon.ico",
-    "baseUrl": "https://phimapi.com",
-    "pluginFile": "./kkphim/plugin.js",
+    "internalName": "KKPhim",
+    "url": "https://raw.githubusercontent.com/er1pm4v/cs32skystr/main/kkphim.sky",
+    "icon": "https://phimapi.com/favicon.ico",
+    "version": 1,
+    "description": "Nguồn phim KKPhim via phimapi.com. Vietsub và Lồng tiếng, cập nhật liên tục.",
+    "authors": [
+      "tearrs"
+    ],
     "language": "vi",
-    "types": ["movie", "series"],
-    "tags": ["vietsub", "lồng tiếng", "kkphim"]
+    "types": [
+      "Movies",
+      "TV"
+    ],
+    "baseUrl": "https://phimapi.com"
   },
   {
-    "packageName": "com.tearrs.vietnamese.nguonc",
     "name": "NguonC",
-    "description": "NguonC.com — nguồn phim ổn định với đầy đủ phim bộ Hàn, Hoa, Việt và phim Hollywood.",
-    "version": "1.0.0",
-    "iconUrl": "https://api.nguonc.com/favicon.ico",
-    "baseUrl": "https://api.nguonc.com",
-    "pluginFile": "./nguonc/plugin.js",
+    "internalName": "NguonC",
+    "url": "https://raw.githubusercontent.com/er1pm4v/cs32skystr/main/nguonc.sky",
+    "icon": "https://api.nguonc.com/favicon.ico",
+    "version": 1,
+    "description": "NguonC.com — phim bộ Hàn, Hoa, Việt và Hollywood Vietsub ổn định.",
+    "authors": [
+      "tearrs"
+    ],
     "language": "vi",
-    "types": ["movie", "series"],
-    "tags": ["vietsub", "nguonc", "phim bộ"]
+    "types": [
+      "Movies",
+      "TV"
+    ],
+    "baseUrl": "https://api.nguonc.com"
   },
   {
-    "packageName": "com.tearrs.vietnamese.motchill",
     "name": "Motchill",
-    "description": "Motchill — xem phim chill, không quảng cáo, Vietsub nhanh nhất.",
-    "version": "1.0.0",
-    "iconUrl": "https://motchill.tv/favicon.ico",
-    "baseUrl": "https://motchill.tv",
-    "pluginFile": "./motchill/plugin.js",
+    "internalName": "Motchill",
+    "url": "https://raw.githubusercontent.com/er1pm4v/cs32skystr/main/motchill.sky",
+    "icon": "https://motchill.tv/favicon.ico",
+    "version": 1,
+    "description": "Motchill — xem phim chill, Vietsub nhanh nhất.",
+    "authors": [
+      "tearrs"
+    ],
     "language": "vi",
-    "types": ["movie", "series"],
-    "tags": ["vietsub", "motchill", "phim chill"]
+    "types": [
+      "Movies",
+      "TV"
+    ],
+    "baseUrl": "https://motchill.tv"
   },
   {
-    "packageName": "com.tearrs.vietnamese.phimchill",
     "name": "PhimChill",
+    "internalName": "PhimChill",
+    "url": "https://raw.githubusercontent.com/er1pm4v/cs32skystr/main/phimchill.sky",
+    "icon": "https://phimchill.net/favicon.ico",
+    "version": 1,
     "description": "PhimChill — kho phim Việt đa dạng, tập trung vào phim chiếu rạp và phim hot.",
-    "version": "1.0.0",
-    "iconUrl": "https://phimchill.net/favicon.ico",
-    "baseUrl": "https://phimchill.net",
-    "pluginFile": "./phimchill/plugin.js",
+    "authors": [
+      "tearrs"
+    ],
     "language": "vi",
-    "types": ["movie", "series"],
-    "tags": ["vietsub", "phimchill", "rạp chiếu"]
+    "types": [
+      "Movies",
+      "TV"
+    ],
+    "baseUrl": "https://phimchill.net"
   },
   {
-    "packageName": "com.tearrs.vietnamese.animehay",
     "name": "AnimeHay",
-    "description": "AnimeHay — xem anime Vietsub chất lượng cao, đầy đủ bộ cũ và mới nhất mùa này.",
-    "version": "1.0.0",
-    "iconUrl": "https://animehay.tv/favicon.ico",
-    "baseUrl": "https://animehay.tv",
-    "pluginFile": "./animehay/plugin.js",
+    "internalName": "AnimeHay",
+    "url": "https://raw.githubusercontent.com/er1pm4v/cs32skystr/main/animehay.sky",
+    "icon": "https://animehay.tv/favicon.ico",
+    "version": 1,
+    "description": "AnimeHay — anime Vietsub chất lượng cao, đầy đủ bộ cũ và mới nhất.",
+    "authors": [
+      "tearrs"
+    ],
     "language": "vi",
-    "types": ["anime", "series"],
-    "tags": ["anime", "vietsub", "animehay"]
+    "types": [
+      "Anime"
+    ],
+    "baseUrl": "https://animehay.tv"
   },
   {
-    "packageName": "com.tearrs.vietnamese.animevietsub",
     "name": "AnimeVietsub",
+    "internalName": "AnimeVietsub",
+    "url": "https://raw.githubusercontent.com/er1pm4v/cs32skystr/main/animevietsub.sky",
+    "icon": "https://animevietsub.tv/favicon.ico",
+    "version": 1,
     "description": "AnimeVietsub — chuyên anime Vietsub và Lồng tiếng, cộng đồng fansubber Việt.",
-    "version": "1.0.0",
-    "iconUrl": "https://animevietsub.tv/favicon.ico",
-    "baseUrl": "https://animevietsub.tv",
-    "pluginFile": "./animevietsub/plugin.js",
+    "authors": [
+      "tearrs"
+    ],
     "language": "vi",
-    "types": ["anime"],
-    "tags": ["anime", "vietsub", "lồng tiếng"]
+    "types": [
+      "Anime"
+    ],
+    "baseUrl": "https://animevietsub.tv"
   },
   {
-    "packageName": "com.tearrs.vietnamese.bilutv",
     "name": "BiluTV",
-    "description": "BiluTV — phim bộ Hoa ngữ, Hàn Quốc, Nhật Bản Vietsub tốc độ update nhanh nhất.",
-    "version": "1.0.0",
-    "iconUrl": "https://bilutv.org/favicon.ico",
-    "baseUrl": "https://bilutv.org",
-    "pluginFile": "./bilutv/plugin.js",
+    "internalName": "BiluTV",
+    "url": "https://raw.githubusercontent.com/er1pm4v/cs32skystr/main/bilutv.sky",
+    "icon": "https://bilutv.org/favicon.ico",
+    "version": 1,
+    "description": "BiluTV — phim bộ Hoa ngữ, Hàn Quốc, Nhật Bản Vietsub tốc độ update nhanh.",
+    "authors": [
+      "tearrs"
+    ],
     "language": "vi",
-    "types": ["series"],
-    "tags": ["vietsub", "hoa ngữ", "hàn quốc", "bilutv"]
+    "types": [
+      "TV"
+    ],
+    "baseUrl": "https://bilutv.org"
   },
   {
-    "packageName": "com.tearrs.vietnamese.phim1080",
     "name": "Phim1080",
+    "internalName": "Phim1080",
+    "url": "https://raw.githubusercontent.com/er1pm4v/cs32skystr/main/phim1080.sky",
+    "icon": "https://phim1080.in/favicon.ico",
+    "version": 1,
     "description": "Phim1080 — phim Full HD 1080p, Bluray. Chất lượng hình ảnh và âm thanh vượt trội.",
-    "version": "1.0.0",
-    "iconUrl": "https://phim1080.in/favicon.ico",
-    "baseUrl": "https://phim1080.in",
-    "pluginFile": "./phim1080/plugin.js",
+    "authors": [
+      "tearrs"
+    ],
     "language": "vi",
-    "types": ["movie", "series"],
-    "tags": ["1080p", "bluray", "vietsub", "full hd"]
+    "types": [
+      "Movies",
+      "TV"
+    ],
+    "baseUrl": "https://phim1080.in"
   }
 ]
