@@ -1,9 +1,9 @@
 {
   "name": "Vietnamese Streaming Hub",
-  "id": "com.tearrs.vietnamese",
+  "packageName": "com.tearrs.vietnamese",
   "description": "Bộ sưu tập plugin phim Việt — Phim lẻ, phim bộ, anime Vietsub/Lồng tiếng từ các nguồn uy tín nhất.",
   "manifestVersion": 1,
   "pluginLists": [
-    "https://raw.githubusercontent.com/3r1pm4V/cs32skystr/main/plugins.json"
+    "https://raw.githubusercontent.com/3r1pm4V/cs32skystr/main/dist/plugins.json"
   ]
 }

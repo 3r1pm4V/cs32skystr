@@ -1,110 +1,161 @@
 [
   {
+    "packageName": "com.tearrs.vietnamese.ophim",
     "name": "OPhim",
-    "internalName": "OPhim",
-    "url": "ophim.sky",
-    "icon": "https://ophim1.com/favicon.ico",
     "version": 1,
+    "baseUrl": "https://ophim1.com",
     "description": "Phim lẻ & phim bộ Vietsub / Lồng tiếng từ OPhim API. Cập nhật nhanh, nội dung đa dạng.",
-    "authors": ["tearrs"],
-    "language": "vi",
-    "types": ["Movies", "TV"],
-    "baseUrl": "https://ophim1.com"
+    "authors": [
+      "tearrs"
+    ],
+    "languages": [
+      "vi"
+    ],
+    "categories": [
+      "Movie",
+      "TvSeries"
+    ],
+    "url": "https://raw.githubusercontent.com/3r1pm4V/cs32skystr/main/dist/com.tearrs.vietnamese.ophim.sky"
   },
   {
+    "packageName": "com.tearrs.vietnamese.kkphim",
     "name": "KKPhim",
-    "internalName": "KKPhim",
-    "url": "kkphim.sky",
-    "icon": "https://phimapi.com/favicon.ico",
     "version": 1,
+    "baseUrl": "https://phimapi.com",
     "description": "Nguồn phim KKPhim via phimapi.com. Vietsub và Lồng tiếng, cập nhật liên tục.",
-    "authors": ["tearrs"],
-    "language": "vi",
-    "types": ["Movies", "TV"],
-    "baseUrl": "https://phimapi.com"
+    "authors": [
+      "tearrs"
+    ],
+    "languages": [
+      "vi"
+    ],
+    "categories": [
+      "Movie",
+      "TvSeries"
+    ],
+    "url": "https://raw.githubusercontent.com/3r1pm4V/cs32skystr/main/dist/com.tearrs.vietnamese.kkphim.sky"
   },
   {
+    "packageName": "com.tearrs.vietnamese.nguonc",
     "name": "NguonC",
-    "internalName": "NguonC",
-    "url": "nguonc.sky",
-    "icon": "https://api.nguonc.com/favicon.ico",
     "version": 1,
+    "baseUrl": "https://api.nguonc.com",
     "description": "NguonC.com — phim bộ Hàn, Hoa, Việt và Hollywood Vietsub ổn định.",
-    "authors": ["tearrs"],
-    "language": "vi",
-    "types": ["Movies", "TV"],
-    "baseUrl": "https://api.nguonc.com"
+    "authors": [
+      "tearrs"
+    ],
+    "languages": [
+      "vi"
+    ],
+    "categories": [
+      "Movie",
+      "TvSeries"
+    ],
+    "url": "https://raw.githubusercontent.com/3r1pm4V/cs32skystr/main/dist/com.tearrs.vietnamese.nguonc.sky"
   },
   {
+    "packageName": "com.tearrs.vietnamese.motchill",
     "name": "Motchill",
-    "internalName": "Motchill",
-    "url": "motchill.sky",
-    "icon": "https://motchill.tv/favicon.ico",
     "version": 1,
+    "baseUrl": "https://motchill.tv",
     "description": "Motchill — xem phim chill, Vietsub nhanh nhất.",
-    "authors": ["tearrs"],
-    "language": "vi",
-    "types": ["Movies", "TV"],
-    "baseUrl": "https://motchill.tv"
+    "authors": [
+      "tearrs"
+    ],
+    "languages": [
+      "vi"
+    ],
+    "categories": [
+      "Movie",
+      "TvSeries"
+    ],
+    "url": "https://raw.githubusercontent.com/3r1pm4V/cs32skystr/main/dist/com.tearrs.vietnamese.motchill.sky"
   },
   {
+    "packageName": "com.tearrs.vietnamese.phimchill",
     "name": "PhimChill",
-    "internalName": "PhimChill",
-    "url": "phimchill.sky",
-    "icon": "https://phimchill.net/favicon.ico",
     "version": 1,
-    "description": "PhimChill — kho phim Việt đa dạng, tập trung vào phim chiếu rạp và phim hot.",
-    "authors": ["tearrs"],
-    "language": "vi",
-    "types": ["Movies", "TV"],
-    "baseUrl": "https://phimchill.net"
+    "baseUrl": "https://phimchill.net",
+    "description": "PhimChill — kho phim Việt đa dạng, phim chiếu rạp và phim hot.",
+    "authors": [
+      "tearrs"
+    ],
+    "languages": [
+      "vi"
+    ],
+    "categories": [
+      "Movie",
+      "TvSeries"
+    ],
+    "url": "https://raw.githubusercontent.com/3r1pm4V/cs32skystr/main/dist/com.tearrs.vietnamese.phimchill.sky"
   },
   {
+    "packageName": "com.tearrs.vietnamese.animehay",
     "name": "AnimeHay",
-    "internalName": "AnimeHay",
-    "url": "animehay.sky",
-    "icon": "https://animehay.tv/favicon.ico",
     "version": 1,
+    "baseUrl": "https://animehay.tv",
     "description": "AnimeHay — anime Vietsub chất lượng cao, đầy đủ bộ cũ và mới nhất.",
-    "authors": ["tearrs"],
-    "language": "vi",
-    "types": ["Anime"],
-    "baseUrl": "https://animehay.tv"
+    "authors": [
+      "tearrs"
+    ],
+    "languages": [
+      "vi"
+    ],
+    "categories": [
+      "Anime"
+    ],
+    "url": "https://raw.githubusercontent.com/3r1pm4V/cs32skystr/main/dist/com.tearrs.vietnamese.animehay.sky"
   },
   {
+    "packageName": "com.tearrs.vietnamese.animevietsub",
     "name": "AnimeVietsub",
-    "internalName": "AnimeVietsub",
-    "url": "animevietsub.sky",
-    "icon": "https://animevietsub.tv/favicon.ico",
     "version": 1,
+    "baseUrl": "https://animevietsub.tv",
     "description": "AnimeVietsub — chuyên anime Vietsub và Lồng tiếng, cộng đồng fansubber Việt.",
-    "authors": ["tearrs"],
-    "language": "vi",
-    "types": ["Anime"],
-    "baseUrl": "https://animevietsub.tv"
+    "authors": [
+      "tearrs"
+    ],
+    "languages": [
+      "vi"
+    ],
+    "categories": [
+      "Anime"
+    ],
+    "url": "https://raw.githubusercontent.com/3r1pm4V/cs32skystr/main/dist/com.tearrs.vietnamese.animevietsub.sky"
   },
   {
+    "packageName": "com.tearrs.vietnamese.bilutv",
     "name": "BiluTV",
-    "internalName": "BiluTV",
-    "url": "bilutv.sky",
-    "icon": "https://bilutv.org/favicon.ico",
     "version": 1,
+    "baseUrl": "https://bilutv.org",
     "description": "BiluTV — phim bộ Hoa ngữ, Hàn Quốc, Nhật Bản Vietsub tốc độ update nhanh.",
-    "authors": ["tearrs"],
-    "language": "vi",
-    "types": ["TV"],
-    "baseUrl": "https://bilutv.org"
+    "authors": [
+      "tearrs"
+    ],
+    "languages": [
+      "vi"
+    ],
+    "categories": [
+      "TvSeries"
+    ],
+    "url": "https://raw.githubusercontent.com/3r1pm4V/cs32skystr/main/dist/com.tearrs.vietnamese.bilutv.sky"
   },
   {
+    "packageName": "com.tearrs.vietnamese.phim1080",
     "name": "Phim1080",
-    "internalName": "Phim1080",
-    "url": "phim1080.sky",
-    "icon": "https://phim1080.in/favicon.ico",
     "version": 1,
+    "baseUrl": "https://phim1080.in",
     "description": "Phim1080 — phim Full HD 1080p, Bluray. Chất lượng hình ảnh và âm thanh vượt trội.",
-    "authors": ["tearrs"],
-    "language": "vi",
-    "types": ["Movies", "TV"],
-    "baseUrl": "https://phim1080.in"
+    "authors": [
+      "tearrs"
+    ],
+    "languages": [
+      "vi"
+    ],
+    "categories": [
+      "Movie",
+      "TvSeries"
+    ],
+    "url": "https://raw.githubusercontent.com/3r1pm4V/cs32skystr/main/dist/com.tearrs.vietnamese.phim1080.sky"
   }
 ]
