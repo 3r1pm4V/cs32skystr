@@ -2,7 +2,7 @@
   {
     "name": "OPhim",
     "internalName": "OPhim",
-    "url": "https://raw.githubusercontent.com/er1pm4v/cs32skystr/main/ophim.sky",
+    "url": "https://raw.githubusercontent.com/er1pm4V/cs32skystr/main/ophim.sky",
     "icon": "https://ophim1.com/favicon.ico",
     "version": 1,
     "description": "Phim lẻ & phim bộ Vietsub / Lồng tiếng từ OPhim API. Cập nhật nhanh, nội dung đa dạng.",
@@ -19,7 +19,7 @@
   {
     "name": "KKPhim",
     "internalName": "KKPhim",
-    "url": "https://raw.githubusercontent.com/er1pm4v/cs32skystr/main/kkphim.sky",
+    "url": "https://raw.githubusercontent.com/er1pm4V/cs32skystr/main/kkphim.sky",
     "icon": "https://phimapi.com/favicon.ico",
     "version": 1,
     "description": "Nguồn phim KKPhim via phimapi.com. Vietsub và Lồng tiếng, cập nhật liên tục.",
@@ -36,7 +36,7 @@
   {
     "name": "NguonC",
     "internalName": "NguonC",
-    "url": "https://raw.githubusercontent.com/er1pm4v/cs32skystr/main/nguonc.sky",
+    "url": "https://raw.githubusercontent.com/er1pm4V/cs32skystr/main/nguonc.sky",
     "icon": "https://api.nguonc.com/favicon.ico",
     "version": 1,
     "description": "NguonC.com — phim bộ Hàn, Hoa, Việt và Hollywood Vietsub ổn định.",
@@ -53,7 +53,7 @@
   {
     "name": "Motchill",
     "internalName": "Motchill",
-    "url": "https://raw.githubusercontent.com/er1pm4v/cs32skystr/main/motchill.sky",
+    "url": "https://raw.githubusercontent.com/er1pm4V/cs32skystr/main/motchill.sky",
     "icon": "https://motchill.tv/favicon.ico",
     "version": 1,
     "description": "Motchill — xem phim chill, Vietsub nhanh nhất.",
@@ -70,7 +70,7 @@
   {
     "name": "PhimChill",
     "internalName": "PhimChill",
-    "url": "https://raw.githubusercontent.com/er1pm4v/cs32skystr/main/phimchill.sky",
+    "url": "https://raw.githubusercontent.com/er1pm4V/cs32skystr/main/phimchill.sky",
     "icon": "https://phimchill.net/favicon.ico",
     "version": 1,
     "description": "PhimChill — kho phim Việt đa dạng, tập trung vào phim chiếu rạp và phim hot.",
@@ -87,7 +87,7 @@
   {
     "name": "AnimeHay",
     "internalName": "AnimeHay",
-    "url": "https://raw.githubusercontent.com/er1pm4v/cs32skystr/main/animehay.sky",
+    "url": "https://raw.githubusercontent.com/er1pm4V/cs32skystr/main/animehay.sky",
     "icon": "https://animehay.tv/favicon.ico",
     "version": 1,
     "description": "AnimeHay — anime Vietsub chất lượng cao, đầy đủ bộ cũ và mới nhất.",
@@ -103,7 +103,7 @@
   {
     "name": "AnimeVietsub",
     "internalName": "AnimeVietsub",
-    "url": "https://raw.githubusercontent.com/er1pm4v/cs32skystr/main/animevietsub.sky",
+    "url": "https://raw.githubusercontent.com/er1pm4V/cs32skystr/main/animevietsub.sky",
     "icon": "https://animevietsub.tv/favicon.ico",
     "version": 1,
     "description": "AnimeVietsub — chuyên anime Vietsub và Lồng tiếng, cộng đồng fansubber Việt.",
@@ -119,7 +119,7 @@
   {
     "name": "BiluTV",
     "internalName": "BiluTV",
-    "url": "https://raw.githubusercontent.com/er1pm4v/cs32skystr/main/bilutv.sky",
+    "url": "https://raw.githubusercontent.com/er1pm4V/cs32skystr/main/bilutv.sky",
     "icon": "https://bilutv.org/favicon.ico",
     "version": 1,
     "description": "BiluTV — phim bộ Hoa ngữ, Hàn Quốc, Nhật Bản Vietsub tốc độ update nhanh.",
@@ -135,7 +135,7 @@
   {
     "name": "Phim1080",
     "internalName": "Phim1080",
-    "url": "https://raw.githubusercontent.com/er1pm4v/cs32skystr/main/phim1080.sky",
+    "url": "https://raw.githubusercontent.com/er1pm4V/cs32skystr/main/phim1080.sky",
     "icon": "https://phim1080.in/favicon.ico",
     "version": 1,
     "description": "Phim1080 — phim Full HD 1080p, Bluray. Chất lượng hình ảnh và âm thanh vượt trội.",
