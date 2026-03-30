@@ -15,7 +15,7 @@
       },
       "source": {
         "baseUrl": "https://phim.nguonc.com",
-        "downloadUrl": "https://raw.githubusercontent.com/3r1pm4V/cs32skystr/main/dist/com.anhdaden.vn.nguonc.sky",
+        "downloadUrl": "https://raw.githubusercontent.com/3r1pm4V/cs32skystr/refs/heads/main/dist/com.anhdaden.vn.nguonc.sky",
         "type": "sky_plugin"
       }
     },
@@ -31,7 +31,7 @@
       },
       "source": {
         "baseUrl": "https://ophim1.com",
-        "downloadUrl": "https://raw.githubusercontent.com/3r1pm4V/cs32skystr/main/dist/com.anhdaden.vn.ophim.sky",
+        "downloadUrl": "https://raw.githubusercontent.com/3r1pm4V/cs32skystr/refs/heads/main/dist/com.anhdaden.vn.ophim.sky",
         "type": "sky_plugin"
       }
     },
@@ -47,7 +47,7 @@
       },
       "source": {
         "baseUrl": "https://phimapi.com",
-        "downloadUrl": "https://raw.githubusercontent.com/3r1pm4V/cs32skystr/main/dist/com.anhdaden.vn.kkphim.sky",
+        "downloadUrl": "https://raw.githubusercontent.com/3r1pm4V/cs32skystr/refs/heads/main/dist/com.anhdaden.vn.kkphim.sky",
         "type": "sky_plugin"
       }
     },
@@ -63,7 +63,7 @@
       },
       "source": {
         "baseUrl": "https://techtnet.com/bluphim.html",
-        "downloadUrl": "https://raw.githubusercontent.com/3r1pm4V/cs32skystr/main/dist/com.anhdaden.vn.bluphim.sky",
+        "downloadUrl": "https://raw.githubusercontent.com/3r1pm4V/cs32skystr/refs/heads/main/dist/com.anhdaden.vn.bluphim.sky",
         "type": "sky_plugin"
       }
     },
@@ -79,7 +79,7 @@
       },
       "source": {
         "baseUrl": "https://phimmoiplus.net",
-        "downloadUrl": "https://raw.githubusercontent.com/3r1pm4V/cs32skystr/main/dist/com.anhdaden.vn.phimmoi.sky",
+        "downloadUrl": "https://raw.githubusercontent.com/3r1pm4V/cs32skystr/refs/heads/main/dist/com.anhdaden.vn.phimmoi.sky",
         "type": "sky_plugin"
       }
     },
@@ -95,7 +95,7 @@
       },
       "source": {
         "baseUrl": "https://phimhdc.com",
-        "downloadUrl": "https://raw.githubusercontent.com/3r1pm4V/cs32skystr/main/dist/com.anhdaden.vn.phimhdc.sky",
+        "downloadUrl": "https://raw.githubusercontent.com/3r1pm4V/cs32skystr/refs/heads/main/dist/com.anhdaden.vn.phimhdc.sky",
         "type": "sky_plugin"
       }
     },
@@ -111,7 +111,7 @@
       },
       "source": {
         "baseUrl": "https://phimlongtieng.link",
-        "downloadUrl": "https://raw.githubusercontent.com/3r1pm4V/cs32skystr/main/dist/com.anhdaden.vn.phimlongtieng.sky",
+        "downloadUrl": "https://raw.githubusercontent.com/3r1pm4V/cs32skystr/refs/heads/main/dist/com.anhdaden.vn.phimlongtieng.sky",
         "type": "sky_plugin"
       }
     },
@@ -127,7 +127,7 @@
       },
       "source": {
         "baseUrl": "https://xem8z.net",
-        "downloadUrl": "https://raw.githubusercontent.com/3r1pm4V/cs32skystr/main/dist/com.anhdaden.vn.xem8z.sky",
+        "downloadUrl": "https://raw.githubusercontent.com/3r1pm4V/cs32skystr/refs/heads/main/dist/com.anhdaden.vn.xem8z.sky",
         "type": "sky_plugin"
       }
     },
@@ -143,7 +143,7 @@
       },
       "source": {
         "baseUrl": "https://holitv.net",
-        "downloadUrl": "https://raw.githubusercontent.com/3r1pm4V/cs32skystr/main/dist/com.anhdaden.vn.holitv.sky",
+        "downloadUrl": "https://raw.githubusercontent.com/3r1pm4V/cs32skystr/refs/heads/main/dist/com.anhdaden.vn.holitv.sky",
         "type": "sky_plugin"
       }
     },
@@ -159,7 +159,7 @@
       },
       "source": {
         "baseUrl": "https://hhhtq.team",
-        "downloadUrl": "https://raw.githubusercontent.com/3r1pm4V/cs32skystr/main/dist/com.anhdaden.vn.hhtq.sky",
+        "downloadUrl": "https://raw.githubusercontent.com/3r1pm4V/cs32skystr/refs/heads/main/dist/com.anhdaden.vn.hhtq.sky",
         "type": "sky_plugin"
       }
     },
@@ -175,7 +175,7 @@
       },
       "source": {
         "baseUrl": "https://yanhh3d.net",
-        "downloadUrl": "https://raw.githubusercontent.com/3r1pm4V/cs32skystr/main/dist/com.anhdaden.vn.yanhh3d.sky",
+        "downloadUrl": "https://raw.githubusercontent.com/3r1pm4V/cs32skystr/refs/heads/main/dist/com.anhdaden.vn.yanhh3d.sky",
         "type": "sky_plugin"
       }
     },
@@ -191,7 +191,7 @@
       },
       "source": {
         "baseUrl": "https://animehay.tv",
-        "downloadUrl": "https://raw.githubusercontent.com/3r1pm4V/cs32skystr/main/dist/com.anhdaden.vn.animehay.sky",
+        "downloadUrl": "https://raw.githubusercontent.com/3r1pm4V/cs32skystr/refs/heads/main/dist/com.anhdaden.vn.animehay.sky",
         "type": "sky_plugin"
       }
     },
@@ -207,7 +207,7 @@
       },
       "source": {
         "baseUrl": "http://bit.ly/animevietsubtv",
-        "downloadUrl": "https://raw.githubusercontent.com/3r1pm4V/cs32skystr/main/dist/com.anhdaden.vn.animevietsub.sky",
+        "downloadUrl": "https://raw.githubusercontent.com/3r1pm4V/cs32skystr/refs/heads/main/dist/com.anhdaden.vn.animevietsub.sky",
         "type": "sky_plugin"
       }
     },
@@ -223,7 +223,7 @@
       },
       "source": {
         "baseUrl": "https://yumei-anime.com",
-        "downloadUrl": "https://raw.githubusercontent.com/3r1pm4V/cs32skystr/main/dist/com.anhdaden.vn.yumeianime.sky",
+        "downloadUrl": "https://raw.githubusercontent.com/3r1pm4V/cs32skystr/refs/heads/main/dist/com.anhdaden.vn.yumeianime.sky",
         "type": "sky_plugin"
       }
     }
