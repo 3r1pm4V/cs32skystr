@@ -1,0 +1,139 @@
+(function () {
+  // ============================================================
+  //  OPhim Provider — SkyStream Plugin
+  //  API: https://ophim1.com/v1/api
+  //  Author: anhdaden (ported by tearrs)
+  // ============================================================
+
+  const API_BASE = "https://ophim1.com/v1/api";
+  const IMG_BASE = "https://img.ophim.live/uploads/movies/";
+  const IMG_PROXY = "https://wsrv.nl/?url=";
+
+  async function fetchJson(url) {
+    const res = await fetch(url, { headers: { "User-Agent": "Mozilla/5.0" } });
+    return res.json();
+  }
+
+  function buildPoster(path) {
+    if (!path) return "";
+    if (path.startsWith("http")) return IMG_PROXY + encodeURIComponent(path);
+    return IMG_BASE + path;
+  }
+
+  function resolveType(m) {
+    const type = (m.type || "").toLowerCase();
+    if (type === "hoathinh") return "anime";
+    if (type === "series" || m.episode_total > 1) return "series";
+    return "movie";
+  }
+
+  function buildItem(m) {
+    return new MultimediaItem({
+      title: m.name || m.origin_name,
+      url: `${API_BASE}/phim/${m.slug}`,
+      posterUrl: buildPoster(m.thumb_url || m.poster_url),
+      type: resolveType(m),
+      year: m.year ? parseInt(m.year) : undefined,
+      score: m.tmdb?.vote_average || undefined,
+      description: m.content || "",
+      status: m.episode_current === "Hoàn Tất" ? "completed" : "ongoing",
+    });
+  }
+
+  // ── getHome ──────────────────────────────────────────────────
+  async function getHome(cb) {
+    try {
+      const sections = [
+        { label: "Phim Lẻ",      path: "danh-sach/phim-le?page=1" },
+        { label: "Phim Bộ",      path: "danh-sach/phim-bo?page=1" },
+        { label: "Hoạt Hình",    path: "danh-sach/hoat-hinh?page=1" },
+      ];
+
+      const result = {};
+      for (const s of sections) {
+        const data = await fetchJson(`${API_BASE}/${s.path}`);
+        result[s.label] = (data.data?.items || []).map(buildItem);
+      }
+
+      // Trending = first batch
+      const trending = await fetchJson(`${API_BASE}/danh-sach/phim-le?page=1`);
+      result["Trending"] = (trending.data?.items || []).slice(0, 8).map(buildItem);
+
+      cb({ success: true, data: result });
+    } catch (e) {
+      cb({ success: false, error: e.message });
+    }
+  }
+
+  // ── search ───────────────────────────────────────────────────
+  async function search(query, cb) {
+    try {
+      const data = await fetchJson(`${API_BASE}/tim-kiem?keyword=${encodeURIComponent(query)}&page=1`);
+      cb({ success: true, data: (data.data?.items || []).map(buildItem) });
+    } catch (e) {
+      cb({ success: false, error: e.message });
+    }
+  }
+
+  // ── load ─────────────────────────────────────────────────────
+  async function load(url, cb) {
+    try {
+      const data = await fetchJson(url);
+      const m = data.data?.item || {};
+
+      const episodes = [];
+      (m.episodes || []).forEach(server => {
+        (server.server_data || []).forEach((ep, idx) => {
+          episodes.push(new Episode({
+            name: ep.name || `Tập ${idx + 1}`,
+            url: ep.link_m3u8 || ep.link_embed || "",
+            season: 1,
+            episode: parseInt(ep.name) || idx + 1,
+            dubStatus: "subbed",
+          }));
+        });
+      });
+
+      const item = buildItem(m);
+      item.cast = (m.actor || []).map(a => new Actor({ name: a }));
+      item.episodes = episodes;
+      cb({ success: true, data: item });
+    } catch (e) {
+      cb({ success: false, error: e.message });
+    }
+  }
+
+  // ── loadStreams ──────────────────────────────────────────────
+  async function loadStreams(url, cb) {
+    try {
+      if (url.includes(".m3u8")) {
+        cb({ success: true, data: [new StreamResult({ url, quality: "Auto" })] });
+        return;
+      }
+      // Remove ads pattern (ophim specific: opstream)
+      const cleanUrl = url.replace(/opstream[^/]*/i, "").trim();
+      const finalUrl = cleanUrl || url;
+
+      if (finalUrl.includes(".m3u8")) {
+        cb({ success: true, data: [new StreamResult({ url: finalUrl, quality: "Auto" })] });
+        return;
+      }
+
+      const res = await fetch(finalUrl, { headers: { Referer: "https://ophim.live/" } });
+      const html = await res.text();
+      const m3u8 = html.match(/["'](https?:\/\/[^"']+\.m3u8[^"']*)['"]/)?.[1];
+      if (m3u8) {
+        cb({ success: true, data: [new StreamResult({ url: m3u8, quality: "Auto", headers: { Referer: finalUrl } })] });
+      } else {
+        cb({ success: false, error: "Không tìm thấy stream" });
+      }
+    } catch (e) {
+      cb({ success: false, error: e.message });
+    }
+  }
+
+  globalThis.getHome = getHome;
+  globalThis.search = search;
+  globalThis.load = load;
+  globalThis.loadStreams = loadStreams;
+})();

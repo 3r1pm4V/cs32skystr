@@ -1,0 +1,157 @@
+(function () {
+  // ============================================================
+  //  PhimHDC Provider — SkyStream Plugin
+  //  Site: https://phimhdc.com  |  Player: streamxemphimhd.site
+  //  Author: anhdaden (ported by tearrs)
+  // ============================================================
+
+  const BASE      = manifest.baseUrl || "https://phimhdc.com";
+  const IMG_PROXY = "https://wsrv.nl/?url=";
+
+  async function fetchHtml(url, referer) {
+    const res = await fetch(url, {
+      headers: { "User-Agent": "Mozilla/5.0", Referer: referer || BASE }
+    });
+    return res.text();
+  }
+
+  function buildPoster(src) {
+    if (!src) return "";
+    return src.startsWith("http") ? IMG_PROXY + encodeURIComponent(src) : BASE + src;
+  }
+
+  function parseListPage(html) {
+    const items = [];
+    // Same structure as BluPhim — col-6 grid blocks
+    const titleImgPairs = [...html.matchAll(
+      /href=["']([^"']*\/phim\/[^"']+)['"]\s+title=["']([^"']+)['"]/gi
+    )];
+    const imgs = [...html.matchAll(/data-src=["']([^"']+\.(?:jpg|png|webp)[^"']*)['"]/gi)];
+    titleImgPairs.forEach((m, idx) => {
+      const url = m[1].startsWith("http") ? m[1] : BASE + m[1];
+      items.push(new MultimediaItem({
+        title:     m[2].trim(),
+        url,
+        posterUrl: buildPoster(imgs[idx]?.[1] || ""),
+        type:      "movie",
+      }));
+    });
+    return items;
+  }
+
+  // ── getHome ──────────────────────────────────────────────────
+  async function getHome(cb) {
+    try {
+      const [le, bo] = await Promise.all([
+        fetchHtml(`${BASE}/danh-sach/phim-le?page=1`),
+        fetchHtml(`${BASE}/danh-sach/phim-bo?page=1`),
+      ]);
+
+      const leItems = parseListPage(le);
+      const boItems = parseListPage(bo);
+
+      cb({
+        success: true,
+        data: {
+          "Trending":  leItems.slice(0, 8),
+          "Phim Lẻ":  leItems,
+          "Phim Bộ":  boItems,
+        }
+      });
+    } catch (e) {
+      cb({ success: false, error: e.message });
+    }
+  }
+
+  // ── search ───────────────────────────────────────────────────
+  async function search(query, cb) {
+    try {
+      const html = await fetchHtml(`${BASE}/?search=${encodeURIComponent(query)}`);
+      cb({ success: true, data: parseListPage(html) });
+    } catch (e) {
+      cb({ success: false, error: e.message });
+    }
+  }
+
+  // ── load ─────────────────────────────────────────────────────
+  async function load(url, cb) {
+    try {
+      const html = await fetchHtml(url);
+
+      const title  = html.match(/<h1[^>]*><span>([^<]+)<\/span>/i)?.[1]
+                  || html.match(/<h1[^>]*>([^<]+)<\/h1>/i)?.[1] || "Unknown";
+      const poster = html.match(/property=og:image[^>]+content=["']([^"']+)['"]/i)?.[1]
+                  || html.match(/content=["']([^"']+)['"]\s+property=og:image/i)?.[1];
+
+      // Episodes: .episodes > .list-episode > a
+      const epSection = html.match(/class=["'][^"']*server-episode-block[^"']*["'][\s\S]*?(?=class=["'][^"']*server-episode-block|<\/div>\s*<\/div>\s*<\/div>\s*<\/section>)/i)?.[0] || html;
+      const epLinks   = [...epSection.matchAll(/href=["']([^"']+\/xem-phim\/[^"']+)['"]\s*(?:title=["']([^"']+)['"]\s*)?/gi)];
+
+      const seen = new Set();
+      const episodes = [];
+      epLinks.forEach((m, idx) => {
+        const epUrl = m[1].startsWith("http") ? m[1] : BASE + m[1];
+        if (!seen.has(epUrl)) {
+          seen.add(epUrl);
+          episodes.push(new Episode({
+            name:    m[2]?.trim() || `Tập ${idx + 1}`,
+            url:     epUrl,
+            season:  1,
+            episode: idx + 1,
+            dubStatus: "subbed",
+          }));
+        }
+      });
+
+      const item = new MultimediaItem({
+        title:     title.trim(),
+        url,
+        posterUrl: buildPoster(poster),
+        type:      episodes.length > 1 ? "series" : "movie",
+      });
+      item.episodes = episodes;
+      cb({ success: true, data: item });
+    } catch (e) {
+      cb({ success: false, error: e.message });
+    }
+  }
+
+  // ── loadStreams ──────────────────────────────────────────────
+  async function loadStreams(url, cb) {
+    try {
+      if (url.includes(".m3u8")) {
+        cb({ success: true, data: [new StreamResult({ url, quality: "Auto" })] });
+        return;
+      }
+      const html = await fetchHtml(url);
+
+      // Try direct m3u8 in page
+      let m3u8 = html.match(/["'](https?:\/\/[^"']+\.m3u8[^"']*)['"]/)?.[1];
+      if (m3u8) {
+        cb({ success: true, data: [new StreamResult({ url: m3u8, quality: "Auto", headers: { Referer: url } })] });
+        return;
+      }
+
+      // Try player.php embed
+      const playerUrl = html.match(/https:\/\/(?:streamxemphimhd|play\.streamxemphimhd)[^"']+/i)?.[0]
+                     || html.match(/https:\/\/phimhdc\.com\/player\.php\?link=[^"']+/i)?.[0];
+      if (playerUrl) {
+        const embedHtml = await fetchHtml(playerUrl, url);
+        m3u8 = embedHtml.match(/["'](https?:\/\/[^"']+\.m3u8[^"']*)['"]/)?.[1];
+        if (m3u8) {
+          cb({ success: true, data: [new StreamResult({ url: m3u8, quality: "Auto", headers: { Referer: playerUrl } })] });
+          return;
+        }
+      }
+
+      cb({ success: false, error: "Không tìm thấy stream" });
+    } catch (e) {
+      cb({ success: false, error: e.message });
+    }
+  }
+
+  globalThis.getHome = getHome;
+  globalThis.search = search;
+  globalThis.load = load;
+  globalThis.loadStreams = loadStreams;
+})();

@@ -1,0 +1,177 @@
+(function () {
+  // ============================================================
+  //  HoliTV Provider — SkyStream Plugin
+  //  Site: https://holitv.net  |  Player: holi.starzd.com
+  //  Author: anhdaden (ported by tearrs)
+  // ============================================================
+
+  const BASE       = manifest.baseUrl || "https://holitv.net";
+  const PLAYER_CDN = "https://holi.starzd.com";
+  const IMG_PROXY  = "https://wsrv.nl/?url=";
+
+  async function fetchHtml(url, referer) {
+    const res = await fetch(url, {
+      headers: { "User-Agent": "Mozilla/5.0", Referer: referer || BASE }
+    });
+    return res.text();
+  }
+
+  function buildPoster(src) {
+    if (!src) return "";
+    return src.startsWith("http") ? IMG_PROXY + encodeURIComponent(src) : BASE + src;
+  }
+
+  /** OWL carousel structure on HoliTV */
+  function parseListPage(html) {
+    const items = [];
+    const imgPattern = /class=["'][^"']*owl-item[^"']*["'][\s\S]*?src=["']([^"']+\.(?:jpg|png|webp)[^"']*)['"]/gi;
+    const hrefPattern = /href=["']([^"']+\/xem-phim\/[^"']+)['"]\s+title=["']([^"']+)['"]/gi;
+
+    const imgs  = [...html.matchAll(/data-src=["']([^"']+\.(?:jpg|png|webp)[^"']*)['"]/gi)];
+    const hrefs = [...html.matchAll(/href=["']([^"']+\/xem-phim\/[^"']+)['"]\s+title=["']([^"']+)['"]/gi)];
+
+    hrefs.forEach((m, idx) => {
+      const url = m[1].startsWith("http") ? m[1] : BASE + m[1];
+      items.push(new MultimediaItem({
+        title:     m[2].trim(),
+        url,
+        posterUrl: buildPoster(imgs[idx]?.[1] || ""),
+        type:      "movie",
+      }));
+    });
+    return items;
+  }
+
+  // ── getHome ──────────────────────────────────────────────────
+  async function getHome(cb) {
+    try {
+      const [phimMoi, phimBo, phimLe, anime] = await Promise.all([
+        fetchHtml(`${BASE}/phim-moi?page=1`),
+        fetchHtml(`${BASE}/phim-bo?page=1`),
+        fetchHtml(`${BASE}/phim-le?page=1`),
+        fetchHtml(`${BASE}/the-loai/phim-hoat-hinh?page=1`),
+      ]);
+
+      const moiItems  = parseListPage(phimMoi);
+      const boItems   = parseListPage(phimBo);
+      const leItems   = parseListPage(phimLe);
+      const animeItems= parseListPage(anime);
+
+      cb({
+        success: true,
+        data: {
+          "Trending":         moiItems.slice(0, 8),
+          "Phim Mới":         moiItems,
+          "Phim Bộ":          boItems,
+          "Phim Lẻ":          leItems,
+          "Hoạt Hình":        animeItems,
+        }
+      });
+    } catch (e) {
+      cb({ success: false, error: e.message });
+    }
+  }
+
+  // ── search ───────────────────────────────────────────────────
+  async function search(query, cb) {
+    try {
+      const html = await fetchHtml(`${BASE}/?s=${encodeURIComponent(query)}`);
+      cb({ success: true, data: parseListPage(html) });
+    } catch (e) {
+      cb({ success: false, error: e.message });
+    }
+  }
+
+  // ── load ─────────────────────────────────────────────────────
+  async function load(url, cb) {
+    try {
+      const html = await fetchHtml(url);
+
+      const title  = html.match(/<h1[^>]*>([^<]+)<\/h1>/i)?.[1]?.trim() || "Unknown";
+      const poster = html.match(/property=og:image[^>]+content=["']([^"']+)['"]/i)?.[1]
+                  || html.match(/content=["']([^"']+)['"]\s+property=og:image/i)?.[1];
+
+      // Episodes: #page-info a[href^='/xem-phim/'] + .list-episode a
+      const epLinks = [...html.matchAll(/href=["']([^"']+)['"]\s*(?:title=["']([^"']+)['"]\s*)?>\s*(?:Tập\s+)?(\d+)/gi)];
+      const seen = new Set();
+      const episodes = [];
+
+      epLinks.forEach((m, idx) => {
+        const epUrl = m[1].startsWith("http") ? m[1] : BASE + m[1];
+        if (!seen.has(epUrl) && (epUrl.includes("xem-phim") || epUrl.includes(BASE))) {
+          seen.add(epUrl);
+          episodes.push(new Episode({
+            name:    `Tập ${m[3] || idx + 1}`,
+            url:     epUrl,
+            season:  1,
+            episode: parseInt(m[3]) || idx + 1,
+            dubStatus: "dubbed",
+          }));
+        }
+      });
+
+      const item = new MultimediaItem({
+        title,
+        url,
+        posterUrl: buildPoster(poster),
+        type:      episodes.length > 1 ? "series" : "movie",
+      });
+      item.episodes = episodes;
+      cb({ success: true, data: item });
+    } catch (e) {
+      cb({ success: false, error: e.message });
+    }
+  }
+
+  // ── loadStreams ──────────────────────────────────────────────
+  async function loadStreams(url, cb) {
+    try {
+      if (url.includes(".m3u8")) {
+        cb({ success: true, data: [new StreamResult({ url, quality: "Auto" })] });
+        return;
+      }
+
+      const html = await fetchHtml(url);
+
+      // HoliTV uses holi.starzd.com/cdn/hls/ or player/index.php?data=
+      const playerData = html.match(/holi\.starzd\.com\/player\/index\.php\?data=([^"'&\s]+)/i)?.[1];
+      if (playerData) {
+        const playerUrl = `${PLAYER_CDN}/player/index.php?data=${playerData}`;
+        const embedHtml = await fetchHtml(playerUrl, url);
+        const m3u8 = embedHtml.match(/["'](https?:\/\/holi\.starzd\.com\/cdn\/hls\/[^"']+)['"]/i)?.[1]
+                  || embedHtml.match(/["'](https?:\/\/[^"']+\.m3u8[^"']*)['"]/i)?.[1];
+        if (m3u8) {
+          cb({ success: true, data: [new StreamResult({ url: m3u8, quality: "Auto", headers: { Referer: PLAYER_CDN } })] });
+          return;
+        }
+      }
+
+      // Direct CDN link
+      const cdnLink = html.match(/["'](https:\/\/holi\.starzd\.com\/cdn\/hls\/[^"']+)['"]/i)?.[1];
+      if (cdnLink) {
+        cb({ success: true, data: [new StreamResult({ url: cdnLink, quality: "Auto", headers: { Referer: PLAYER_CDN } })] });
+        return;
+      }
+
+      // play.playstreamz.site fallback
+      const streamzUrl = html.match(/https:\/\/play\.playstreamz\.site[^"'&\s]*/i)?.[0];
+      if (streamzUrl) {
+        const embedHtml = await fetchHtml(streamzUrl, url);
+        const m3u8 = embedHtml.match(/["'](https?:\/\/[^"']+\.m3u8[^"']*)['"]/)?.[1];
+        if (m3u8) {
+          cb({ success: true, data: [new StreamResult({ url: m3u8, quality: "Auto", headers: { Referer: streamzUrl } })] });
+          return;
+        }
+      }
+
+      cb({ success: false, error: "Không tìm thấy stream" });
+    } catch (e) {
+      cb({ success: false, error: e.message });
+    }
+  }
+
+  globalThis.getHome = getHome;
+  globalThis.search = search;
+  globalThis.load = load;
+  globalThis.loadStreams = loadStreams;
+})();

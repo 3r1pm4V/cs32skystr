@@ -1,0 +1,211 @@
+(function () {
+  // ============================================================
+  //  YumeiAnime Provider — SkyStream Plugin
+  //  Site: https://yumei-anime.com  +  https://pokemonviet.com
+  //  Author: anhdaden (ported by tearrs)
+  // ============================================================
+
+  const BASE         = manifest.baseUrl || "https://yumei-anime.com";
+  const POKEMON_BASE = "https://pokemonviet.com";
+  const POKEMON_CDN  = "https://cdn.pokemonviet.com/player/";
+  const IMG_PROXY    = "https://wsrv.nl/?url=";
+
+  async function fetchHtml(url, referer) {
+    const res = await fetch(url, {
+      headers: { "User-Agent": "Mozilla/5.0", Referer: referer || BASE },
+      redirect: "follow",
+    });
+    return res.text();
+  }
+
+  function buildPoster(src, base) {
+    if (!src) return "";
+    const b = base || BASE;
+    return src.startsWith("http") ? IMG_PROXY + encodeURIComponent(src) : b + src;
+  }
+
+  function parseListPage(html, base) {
+    const items = [];
+    const hrefs  = [...html.matchAll(/href=["']([^"']+)['"]\s+title=["']([^"']+)['"]/gi)];
+    const imgs   = [...html.matchAll(/(?:data-src|src)=["']([^"']+\.(?:jpg|png|webp|jpeg)[^"']*)['"]/gi)];
+
+    hrefs.forEach((m, idx) => {
+      const url = m[1].startsWith("http") ? m[1] : (base || BASE) + m[1];
+      if (url.includes(base || BASE) || url.includes("yumei") || url.includes("pokemon")) {
+        items.push(new MultimediaItem({
+          title:     m[2].trim(),
+          url,
+          posterUrl: buildPoster(imgs[idx]?.[1] || "", base),
+          type:      "anime",
+        }));
+      }
+    });
+    return items;
+  }
+
+  // ── getHome ──────────────────────────────────────────────────
+  async function getHome(cb) {
+    try {
+      const [yumeiHtml, pokemonHtml] = await Promise.all([
+        fetchHtml(BASE),
+        fetchHtml(POKEMON_BASE),
+      ]);
+
+      const yumeiItems   = parseListPage(yumeiHtml, BASE);
+      const pokemonItems = parseListPage(pokemonHtml, POKEMON_BASE);
+
+      cb({
+        success: true,
+        data: {
+          "Trending":       yumeiItems.slice(0, 6).concat(pokemonItems.slice(0, 2)),
+          "Yumei Anime":    yumeiItems,
+          "Pokemon Việt":   pokemonItems,
+        }
+      });
+    } catch (e) {
+      cb({ success: false, error: e.message });
+    }
+  }
+
+  // ── search ───────────────────────────────────────────────────
+  async function search(query, cb) {
+    try {
+      const [yumeiHtml, pokemonHtml] = await Promise.all([
+        fetchHtml(`${BASE}/?s=${encodeURIComponent(query)}`),
+        fetchHtml(`${POKEMON_BASE}/?s=${encodeURIComponent(query)}`),
+      ]);
+
+      const items = [
+        ...parseListPage(yumeiHtml, BASE),
+        ...parseListPage(pokemonHtml, POKEMON_BASE),
+      ];
+      cb({ success: true, data: items });
+    } catch (e) {
+      cb({ success: false, error: e.message });
+    }
+  }
+
+  // ── load ─────────────────────────────────────────────────────
+  async function load(url, cb) {
+    try {
+      const isPokemon = url.includes("pokemonviet");
+      const base      = isPokemon ? POKEMON_BASE : BASE;
+      const html      = await fetchHtml(url);
+
+      const title  = html.match(/property=og:title[^>]+content=["']([^"']+)['"]/i)?.[1]
+                  || html.match(/<h1[^>]*>([^<]+)<\/h1>/i)?.[1] || "Unknown";
+      const poster = html.match(/property=og:image[^>]+content=["']([^"']+)['"]/i)?.[1]
+                  || html.match(/content=["']([^"']+)['"]\s+property=og:image/i)?.[1];
+
+      // YumeiAnime: #tv_series_dl_btns > div.thupa_sub/dub > a
+      const subLinks = [...html.matchAll(/thupa_sub[\s\S]*?href=["']([^"']+)['"]/gi)];
+      const dubLinks = [...html.matchAll(/thupa_dub[\s\S]*?href=["']([^"']+)['"]/gi)];
+
+      const seen = new Set();
+      const episodes = [];
+
+      // Subbed episodes
+      subLinks.forEach((m, idx) => {
+        const epUrl = m[1].startsWith("http") ? m[1] : base + m[1];
+        if (!seen.has(epUrl)) {
+          seen.add(epUrl);
+          episodes.push(new Episode({
+            name:    `Tập ${idx + 1} (Vietsub)`,
+            url:     epUrl,
+            season:  1,
+            episode: idx + 1,
+            dubStatus: "subbed",
+          }));
+        }
+      });
+
+      // Dubbed episodes
+      dubLinks.forEach((m, idx) => {
+        const epUrl = m[1].startsWith("http") ? m[1] : base + m[1];
+        if (!seen.has(epUrl)) {
+          seen.add(epUrl);
+          episodes.push(new Episode({
+            name:    `Tập ${idx + 1} (Lồng tiếng)`,
+            url:     epUrl,
+            season:  2,
+            episode: idx + 1,
+            dubStatus: "dubbed",
+          }));
+        }
+      });
+
+      // Fallback: generic episode links
+      if (episodes.length === 0) {
+        const epLinks = [...html.matchAll(/href=["']([^"']+(?:tap|episode|ep)[^"']*)['"]/gi)];
+        epLinks.forEach((m, idx) => {
+          const epUrl = m[1].startsWith("http") ? m[1] : base + m[1];
+          if (!seen.has(epUrl)) {
+            seen.add(epUrl);
+            episodes.push(new Episode({
+              name:    `Tập ${idx + 1}`,
+              url:     epUrl,
+              season:  1,
+              episode: idx + 1,
+              dubStatus: "subbed",
+            }));
+          }
+        });
+      }
+
+      const item = new MultimediaItem({
+        title:     title.trim(),
+        url,
+        posterUrl: buildPoster(poster, base),
+        type:      "anime",
+      });
+      item.episodes = episodes;
+      cb({ success: true, data: item });
+    } catch (e) {
+      cb({ success: false, error: e.message });
+    }
+  }
+
+  // ── loadStreams ──────────────────────────────────────────────
+  async function loadStreams(url, cb) {
+    try {
+      if (url.includes(".m3u8")) {
+        cb({ success: true, data: [new StreamResult({ url, quality: "Auto" })] });
+        return;
+      }
+
+      const isPokemon = url.includes("pokemonviet");
+      const referer   = isPokemon ? POKEMON_BASE : BASE;
+      const html      = await fetchHtml(url, referer);
+
+      // Pokemon CDN: cdn.pokemonviet.com/player/
+      if (isPokemon) {
+        const cdnUrl = html.match(/https:\/\/cdn\.pokemonviet\.com\/player\/[^"'&\s]+/i)?.[0];
+        if (cdnUrl) {
+          const embedHtml = await fetchHtml(cdnUrl, POKEMON_BASE);
+          const m3u8 = embedHtml.match(/["'](https?:\/\/[^"']+\.m3u8[^"']*)['"]/)?.[1];
+          if (m3u8) {
+            cb({ success: true, data: [new StreamResult({ url: m3u8, quality: "Auto", headers: { Referer: POKEMON_BASE } })] });
+            return;
+          }
+        }
+      }
+
+      // Generic m3u8
+      const m3u8 = html.match(/["'](https?:\/\/[^"']+\.m3u8[^"']*)['"]/)?.[1]
+                || html.match(/file:\s*["']([^"']+)['"]/i)?.[1];
+      if (m3u8) {
+        cb({ success: true, data: [new StreamResult({ url: m3u8, quality: "Auto", headers: { Referer: url } })] });
+        return;
+      }
+
+      cb({ success: false, error: "Không tìm thấy stream" });
+    } catch (e) {
+      cb({ success: false, error: e.message });
+    }
+  }
+
+  globalThis.getHome = getHome;
+  globalThis.search = search;
+  globalThis.load = load;
+  globalThis.loadStreams = loadStreams;
+})();

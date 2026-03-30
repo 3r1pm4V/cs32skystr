@@ -1,0 +1,189 @@
+(function () {
+  // ============================================================
+  //  YanHH3D Provider — SkyStream Plugin
+  //  Site: https://yanhh3d.net  |  Player: vicdn.vip
+  //  Author: anhdaden (ported by tearrs)
+  // ============================================================
+
+  const BASE      = manifest.baseUrl || "https://yanhh3d.net";
+  const VICDN     = "https://vicdn.vip";
+  const IMG_PROXY = "https://wsrv.nl/?url=";
+
+  async function fetchHtml(url, referer) {
+    const res = await fetch(url, {
+      headers: { "User-Agent": "Mozilla/5.0", Referer: referer || BASE }
+    });
+    return res.text();
+  }
+
+  function buildPoster(src) {
+    if (!src) return "";
+    return src.startsWith("http") ? IMG_PROXY + encodeURIComponent(src) : BASE + src;
+  }
+
+  /** YanHH3D uses Aniwatch-style layout (div.film-poster) */
+  function parseListPage(html) {
+    const items = [];
+    const blocks = [...html.matchAll(/<div[^>]+flw-item[\s\S]*?(?=<div[^>]+flw-item|$)/gi)];
+
+    blocks.forEach(block => {
+      const href  = block[0].match(/href=["']([^"']+)['"]/i)?.[1];
+      const title = block[0].match(/<h3[^>]*>\s*<a[^>]*>([^<]+)<\/a>/i)?.[1]
+                 || block[0].match(/data-jname=["']([^"']+)['"]/i)?.[1];
+      const img   = block[0].match(/(?:data-src|src)=["']([^"']+\.(?:jpg|png|webp)[^"']*)['"]/i)?.[1];
+      const ticks = block[0].match(/<div[^>]+tick-item[^>]*>\s*([\d]+)\s*<\/div>/gi) || [];
+      const epCnt = ticks[0]?.match(/(\d+)/)?.[1];
+
+      if (href && title) {
+        const url = href.startsWith("http") ? href : BASE + href;
+        items.push(new MultimediaItem({
+          title:     title.trim(),
+          url,
+          posterUrl: buildPoster(img || ""),
+          type:      epCnt && parseInt(epCnt) > 1 ? "anime" : "anime",
+        }));
+      }
+    });
+    return items;
+  }
+
+  // ── getHome ──────────────────────────────────────────────────
+  async function getHome(cb) {
+    try {
+      const html = await fetchHtml(BASE);
+      const items = parseListPage(html);
+
+      // Also fetch genre page
+      const genreHtml = await fetchHtml(`${BASE}/the-loai/`);
+      const genreItems = parseListPage(genreHtml);
+
+      cb({
+        success: true,
+        data: {
+          "Trending":                 items.slice(0, 8),
+          "Hoạt Hình Thuyết Minh":   items,
+          "Theo Thể Loại":           genreItems,
+        }
+      });
+    } catch (e) {
+      cb({ success: false, error: e.message });
+    }
+  }
+
+  // ── search ───────────────────────────────────────────────────
+  async function search(query, cb) {
+    try {
+      const html = await fetchHtml(`${BASE}/search?keysearch=${encodeURIComponent(query)}`);
+      cb({ success: true, data: parseListPage(html) });
+    } catch (e) {
+      cb({ success: false, error: e.message });
+    }
+  }
+
+  // ── load ─────────────────────────────────────────────────────
+  async function load(url, cb) {
+    try {
+      const html = await fetchHtml(url);
+
+      // Aniwatch-style detail page
+      const title = html.match(/<h2[^>]+class=["'][^"']*film-name[^"']*["'][^>]*>([^<]+)<\/h2>/i)?.[1]?.trim()
+                 || html.match(/<h1[^>]*>([^<]+)<\/h1>/i)?.[1]?.trim() || "Unknown";
+      const poster = html.match(/property=og:image[^>]+content=["']([^"']+)['"]/i)?.[1]
+                  || html.match(/content=["']([^"']+)['"]\s+property=og:image/i)?.[1];
+      const desc   = html.match(/class=["'][^"']*film-description[^"']*["'][^>]*>[\s\S]*?<div[^>]*>([\s\S]*?)<\/div>/i)?.[1]?.replace(/<[^>]+>/g, "").trim();
+
+      // ssli order div = server tabs; episodes inside .ssli-order
+      const epLinks = [...html.matchAll(/href=["']([^"']+)['"]\s+(?:title=["']([^"']+)["'])?\s*(?:class=["'][^"']*ep-item[^"']*['"]\s*)?/gi)];
+
+      const seen = new Set();
+      const episodes = [];
+      epLinks.forEach((m, idx) => {
+        const epUrl = m[1].startsWith("http") ? m[1] : BASE + m[1];
+        if (!seen.has(epUrl) && epUrl.includes(BASE) && !epUrl.endsWith(BASE + "/")) {
+          seen.add(epUrl);
+          episodes.push(new Episode({
+            name:    m[2]?.trim() || `Tập ${idx + 1}`,
+            url:     epUrl,
+            season:  1,
+            episode: idx + 1,
+            dubStatus: "dubbed",
+          }));
+        }
+      });
+
+      const item = new MultimediaItem({
+        title,
+        url,
+        posterUrl: buildPoster(poster),
+        description: desc || "",
+        type: "anime",
+      });
+      item.episodes = episodes;
+      cb({ success: true, data: item });
+    } catch (e) {
+      cb({ success: false, error: e.message });
+    }
+  }
+
+  // ── loadStreams ──────────────────────────────────────────────
+  async function loadStreams(url, cb) {
+    try {
+      if (url.includes(".m3u8")) {
+        cb({ success: true, data: [new StreamResult({ url, quality: "Auto" })] });
+        return;
+      }
+
+      const html = await fetchHtml(url);
+
+      // vicdn.vip embed
+      const vicdnUrl = html.match(/https:\/\/vicdn\.vip\/embed\/[^"'&\s]+/i)?.[0];
+      if (vicdnUrl) {
+        const embedHtml = await fetchHtml(vicdnUrl, url);
+        const m3u8 = embedHtml.match(/["'](https?:\/\/[^"']+\/master\.m3u8[^"']*)['"]/i)?.[1]
+                  || embedHtml.match(/["'](https?:\/\/[^"']+\.m3u8[^"']*)['"]/i)?.[1];
+        if (m3u8) {
+          cb({ success: true, data: [new StreamResult({ url: m3u8, quality: "Auto", headers: { Referer: VICDN } })] });
+          return;
+        }
+      }
+
+      // ssplay.net embed
+      const ssplayUrl = html.match(/https:\/\/ssplay\.net\/v\/[^"'&\s]+/i)?.[0];
+      if (ssplayUrl) {
+        const embedHtml = await fetchHtml(ssplayUrl, url);
+        const m3u8 = embedHtml.match(/["'](https?:\/\/[^"']+\.m3u8[^"']*)['"]/)?.[1];
+        if (m3u8) {
+          cb({ success: true, data: [new StreamResult({ url: m3u8, quality: "Auto", headers: { Referer: "https://ssplay.net" } })] });
+          return;
+        }
+      }
+
+      // abyss-cdn or short-cdn fallback
+      const abyssUrl = html.match(/https:\/\/(?:abyss|short)-cdn\.ink\/video\/[^"'&\s]+/i)?.[0];
+      if (abyssUrl) {
+        const embedHtml = await fetchHtml(abyssUrl, url);
+        const m3u8 = embedHtml.match(/["'](https?:\/\/[^"']+\.m3u8[^"']*)['"]/)?.[1];
+        if (m3u8) {
+          cb({ success: true, data: [new StreamResult({ url: m3u8, quality: "Auto", headers: { Referer: abyssUrl } })] });
+          return;
+        }
+      }
+
+      // Generic m3u8 fallback
+      const m3u8 = html.match(/["'](https?:\/\/[^"']+\.m3u8[^"']*)['"]/)?.[1];
+      if (m3u8) {
+        cb({ success: true, data: [new StreamResult({ url: m3u8, quality: "Auto", headers: { Referer: url } })] });
+        return;
+      }
+
+      cb({ success: false, error: "Không tìm thấy stream" });
+    } catch (e) {
+      cb({ success: false, error: e.message });
+    }
+  }
+
+  globalThis.getHome = getHome;
+  globalThis.search = search;
+  globalThis.load = load;
+  globalThis.loadStreams = loadStreams;
+})();

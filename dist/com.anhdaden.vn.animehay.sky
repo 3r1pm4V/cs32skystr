@@ -1,0 +1,175 @@
+(function () {
+  // ============================================================
+  //  AnimeHay Provider — SkyStream Plugin
+  //  Site: https://animehay.tv  |  Stream: ssplay.net / rapovideo
+  //  Author: anhdaden (ported by tearrs)
+  // ============================================================
+
+  const BASE      = manifest.baseUrl || "https://animehay.tv";
+  const RAPOVIDEO = "https://pt.rapovideo.xyz/playlist";
+  const SSPLAY    = "https://ssplay.net";
+  const IMG_PROXY = "https://wsrv.nl/?url=";
+
+  async function fetchHtml(url, referer) {
+    const res = await fetch(url, {
+      headers: { "User-Agent": "Mozilla/5.0", Referer: referer || BASE }
+    });
+    return res.text();
+  }
+
+  function buildPoster(src) {
+    if (!src) return "";
+    return src.startsWith("http") ? IMG_PROXY + encodeURIComponent(src) : BASE + src;
+  }
+
+  /** AnimeHay listing: div.movies-list > div.movie-item */
+  function parseListPage(html) {
+    const items = [];
+    const blocks = [...html.matchAll(/<div[^>]+movie-item[\s\S]*?(?=<div[^>]+movie-item|<\/div>\s*<\/div>\s*<\/div>\s*$)/gi)];
+
+    blocks.forEach(block => {
+      const href  = block[0].match(/href=["']([^"']+\/thong-tin-phim\/[^"']+)['"]/i)?.[1];
+      const title = block[0].match(/<div[^>]+name-movie[^>]*>([^<]+)<\/div>/i)?.[1]?.trim()
+                 || block[0].match(/title=["']([^"']+)['"]/i)?.[1]?.trim();
+      const img   = block[0].match(/(?:data-src|src)=["']([^"']+\.(?:jpg|png|webp)[^"']*)['"]/i)?.[1];
+
+      if (href && title) {
+        const url = href.startsWith("http") ? href : BASE + href;
+        items.push(new MultimediaItem({
+          title:     title,
+          url,
+          posterUrl: buildPoster(img || ""),
+          type:      "anime",
+        }));
+      }
+    });
+    return items;
+  }
+
+  // ── getHome ──────────────────────────────────────────────────
+  async function getHome(cb) {
+    try {
+      const html = await fetchHtml(`${BASE}/phim-moi-cap-nhap/trang-1`);
+      const items = parseListPage(html);
+
+      cb({
+        success: true,
+        data: {
+          "Trending":        items.slice(0, 8),
+          "Anime Mới Nhất":  items,
+        }
+      });
+    } catch (e) {
+      cb({ success: false, error: e.message });
+    }
+  }
+
+  // ── search ───────────────────────────────────────────────────
+  async function search(query, cb) {
+    try {
+      const html = await fetchHtml(`${BASE}/tim-kiem?keyword=${encodeURIComponent(query)}`);
+      cb({ success: true, data: parseListPage(html) });
+    } catch (e) {
+      cb({ success: false, error: e.message });
+    }
+  }
+
+  // ── load ─────────────────────────────────────────────────────
+  async function load(url, cb) {
+    try {
+      const html = await fetchHtml(url);
+
+      const title = html.match(/<h1[^>]+heading_movie[^>]*>([^<]+)<\/h1>/i)?.[1]?.trim()
+                 || html.match(/<h1[^>]*>([^<]+)<\/h1>/i)?.[1]?.trim() || "Unknown";
+      const poster = html.match(/property=og:image[^>]+content=["']([^"']+)['"]/i)?.[1]
+                  || html.match(/content=["']([^"']+)['"]\s+property=og:image/i)?.[1];
+
+      // info-movie section: genres
+      const genres = [...html.matchAll(/div\.info-movie\s+a\[href\^=\\'\/the-loai\/\\'[^>]*>([^<]+)<\/a>/gi)]
+        .map(m => m[1]).join(", ");
+
+      // Episode list from detail page
+      const epSection = html.match(/list-item-episode[\s\S]*?(?=<\/div>\s*<\/div>\s*<\/div>)/i)?.[0] || html;
+      const epLinks = [...epSection.matchAll(/href=["']([^"']+\/xem-phim\/[^"']+)['"]/gi)];
+
+      const seen = new Set();
+      const episodes = [];
+      epLinks.forEach((m, idx) => {
+        const epUrl = m[1].startsWith("http") ? m[1] : BASE + m[1];
+        if (!seen.has(epUrl)) {
+          seen.add(epUrl);
+          const epNum = epUrl.match(/tap-(\d+)/i)?.[1] || String(idx + 1);
+          episodes.push(new Episode({
+            name:    `Tập ${epNum}`,
+            url:     epUrl,
+            season:  1,
+            episode: parseInt(epNum) || idx + 1,
+            dubStatus: "subbed",
+          }));
+        }
+      });
+
+      const item = new MultimediaItem({
+        title,
+        url,
+        posterUrl: buildPoster(poster),
+        type: "anime",
+        description: genres ? `Thể loại: ${genres}` : "",
+      });
+      item.episodes = episodes;
+      cb({ success: true, data: item });
+    } catch (e) {
+      cb({ success: false, error: e.message });
+    }
+  }
+
+  // ── loadStreams ──────────────────────────────────────────────
+  async function loadStreams(url, cb) {
+    try {
+      if (url.includes(".m3u8")) {
+        cb({ success: true, data: [new StreamResult({ url, quality: "Auto" })] });
+        return;
+      }
+
+      const html = await fetchHtml(url);
+
+      // embedUrl extraction
+      const embedUrl = html.match(/embedUrl['":\s]+["']([^"']+)['"]/i)?.[1];
+
+      // Try ssplay.net
+      const ssplayUrl = html.match(/https:\/\/ssplay\.net\/v\/[^"'&\s]+/i)?.[0];
+      if (ssplayUrl) {
+        const embedHtml = await fetchHtml(ssplayUrl, BASE);
+        const m3u8 = embedHtml.match(/["'](https?:\/\/[^"']+\/master\.m3u8[^"']*)['"]/i)?.[1]
+                  || embedHtml.match(/["'](https?:\/\/[^"']+\.m3u8[^"']*)['"]/i)?.[1];
+        if (m3u8) {
+          cb({ success: true, data: [new StreamResult({ url: m3u8, quality: "Auto", headers: { Referer: SSPLAY } })] });
+          return;
+        }
+      }
+
+      // Try rapovideo playlist
+      const rapoUrl = html.match(/https:\/\/pt\.rapovideo\.xyz\/playlist(?:\/v2)?\/[^"'&\s]+/i)?.[0];
+      if (rapoUrl) {
+        cb({ success: true, data: [new StreamResult({ url: rapoUrl, quality: "Auto", headers: { Referer: BASE } })] });
+        return;
+      }
+
+      // Generic m3u8
+      const m3u8 = html.match(/["'](https?:\/\/[^"']+\.m3u8[^"']*)['"]/)?.[1];
+      if (m3u8) {
+        cb({ success: true, data: [new StreamResult({ url: m3u8, quality: "Auto", headers: { Referer: url } })] });
+        return;
+      }
+
+      cb({ success: false, error: "Không tìm thấy stream" });
+    } catch (e) {
+      cb({ success: false, error: e.message });
+    }
+  }
+
+  globalThis.getHome = getHome;
+  globalThis.search = search;
+  globalThis.load = load;
+  globalThis.loadStreams = loadStreams;
+})();

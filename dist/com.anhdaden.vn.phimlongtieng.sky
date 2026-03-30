@@ -1,0 +1,167 @@
+(function () {
+  // ============================================================
+  //  PhimLongTieng Provider — SkyStream Plugin
+  //  Site: https://phimlongtieng.link  (TVB, phim xưa lồng tiếng)
+  //  Author: anhdaden (ported by tearrs)
+  // ============================================================
+
+  const BASE      = manifest.baseUrl || "https://phimlongtieng.link";
+  const IMG_PROXY = "https://wsrv.nl/?url=";
+
+  async function fetchHtml(url, referer) {
+    const res = await fetch(url, {
+      headers: { "User-Agent": "Mozilla/5.0", Referer: referer || BASE }
+    });
+    return res.text();
+  }
+
+  function buildPoster(src) {
+    if (!src) return "";
+    return src.startsWith("http") ? IMG_PROXY + encodeURIComponent(src) : BASE + src;
+  }
+
+  /** Listing page uses owl-demo carousel structure */
+  function parseListPage(html) {
+    const items = [];
+    const pattern = /class=["'][^"']*movie-image[^"']*["'][\s\S]*?href=["']([^"']+)['"]\s*>\s*<img[^>]+(?:src|data-src)=["']([^"']+)['"]/gi;
+    const titlePattern = /class=["'][^"']*movie-item[^"']*["'][\s\S]*?<a[^>]+title=["']([^"']+)['"]/gi;
+
+    const hrefs = [...html.matchAll(/class=["'][^"']*movie-image[^"']*["'][\s\S]*?href=["']([^"'\/][^"']*)['"]/gi)];
+    const imgs  = [...html.matchAll(/class=["'][^"']*movie-image[^"']*["'][\s\S]*?(?:src|data-src)=["']([^"']+\.(?:jpg|png|webp)[^"']*)['"]/gi)];
+    const titles= [...html.matchAll(/<div\s[^>]*inner[^>]*>[\s\S]*?<a[^>]+>([^<]+)<\/a>/gi)];
+
+    for (let i = 0; i < hrefs.length; i++) {
+      const url = hrefs[i][1].startsWith("http") ? hrefs[i][1] : BASE + "/" + hrefs[i][1].replace(/^\//, "");
+      items.push(new MultimediaItem({
+        title:     titles[i]?.[1]?.trim() || `Phim ${i + 1}`,
+        url,
+        posterUrl: buildPoster(imgs[i]?.[1] || ""),
+        type:      "series",
+        dubStatus: "dubbed",
+      }));
+    }
+    return items;
+  }
+
+  // ── getHome ──────────────────────────────────────────────────
+  async function getHome(cb) {
+    try {
+      const [longtieng, thuyetminh, hk, cn] = await Promise.all([
+        fetchHtml(`${BASE}/search/long-tieng/`),
+        fetchHtml(`${BASE}/search/thuyet-minh/`),
+        fetchHtml(`${BASE}/index.php?do=phim&act=searchs&country=hk&page=1`),
+        fetchHtml(`${BASE}/index.php?do=phim&act=searchs&country=cn&page=1`),
+      ]);
+
+      cb({
+        success: true,
+        data: {
+          "Trending":        parseListPage(longtieng).slice(0, 8),
+          "Phim Lồng Tiếng": parseListPage(longtieng),
+          "Phim Thuyết Minh":parseListPage(thuyetminh),
+          "Phim Hồng Kông":  parseListPage(hk),
+          "Phim Trung Quốc": parseListPage(cn),
+        }
+      });
+    } catch (e) {
+      cb({ success: false, error: e.message });
+    }
+  }
+
+  // ── search ───────────────────────────────────────────────────
+  async function search(query, cb) {
+    try {
+      const html = await fetchHtml(`${BASE}/search/${encodeURIComponent(query)}/`);
+      cb({ success: true, data: parseListPage(html) });
+    } catch (e) {
+      cb({ success: false, error: e.message });
+    }
+  }
+
+  // ── load ─────────────────────────────────────────────────────
+  async function load(url, cb) {
+    try {
+      const html = await fetchHtml(url);
+
+      const title  = html.match(/<h1[^>]*>([^<]+)<\/h1>/i)?.[1]?.trim() || "Unknown";
+      const poster = html.match(/property=og:image[^>]+content=["']([^"']+)['"]/i)?.[1]
+                  || html.match(/content=["']([^"']+)['"]\s+property=og:image/i)?.[1];
+
+      // Episode pages: div.page-tap > ul > li
+      const epLinks = [...html.matchAll(/href=["']([^"']+)['"]\s*(?:title=["']([^"']+)['"]\s*)?>\s*(?:Tập\s*)?(\d+)/gi)];
+
+      const seen = new Set();
+      const episodes = [];
+      epLinks.forEach((m, idx) => {
+        const epUrl = m[1].startsWith("http") ? m[1] : BASE + m[1];
+        if (!seen.has(epUrl) && (epUrl.includes(BASE) || epUrl.includes("phimlongtieng"))) {
+          seen.add(epUrl);
+          episodes.push(new Episode({
+            name:    `Tập ${m[3] || idx + 1}`,
+            url:     epUrl,
+            season:  1,
+            episode: parseInt(m[3]) || idx + 1,
+            dubStatus: "dubbed",
+          }));
+        }
+      });
+
+      const item = new MultimediaItem({
+        title:     title,
+        url,
+        posterUrl: buildPoster(poster),
+        type:      episodes.length > 1 ? "series" : "movie",
+      });
+      item.episodes = episodes;
+      cb({ success: true, data: item });
+    } catch (e) {
+      cb({ success: false, error: e.message });
+    }
+  }
+
+  // ── loadStreams ──────────────────────────────────────────────
+  async function loadStreams(url, cb) {
+    try {
+      if (url.includes(".m3u8")) {
+        cb({ success: true, data: [new StreamResult({ url, quality: "Auto" })] });
+        return;
+      }
+
+      const html = await fetchHtml(url);
+
+      // Try play2.php?hash= pattern
+      const play2 = html.match(/play2\.php\?hash=([^"'&\s]+)/i)?.[1];
+      if (play2) {
+        const playerUrl = `${BASE}/play2.php?hash=${play2}`;
+        const playerHtml = await fetchHtml(playerUrl, url);
+        const sources = [
+          /file:\s*["']([^"']+\.m3u8[^"']*)['"]/i,
+          /["'](https?:\/\/[^"']+\.m3u8[^"']*)['"]/i,
+        ];
+        for (const re of sources) {
+          const m = playerHtml.match(re);
+          if (m) {
+            cb({ success: true, data: [new StreamResult({ url: m[1], quality: "Auto", headers: { Referer: playerUrl } })] });
+            return;
+          }
+        }
+      }
+
+      // Direct m3u8 fallback
+      const m3u8 = html.match(/["'](https?:\/\/[^"']+\.m3u8[^"']*)['"]/)?.[1];
+      if (m3u8) {
+        cb({ success: true, data: [new StreamResult({ url: m3u8, quality: "Auto", headers: { Referer: url } })] });
+        return;
+      }
+
+      cb({ success: false, error: "Không tìm thấy stream" });
+    } catch (e) {
+      cb({ success: false, error: e.message });
+    }
+  }
+
+  globalThis.getHome = getHome;
+  globalThis.search = search;
+  globalThis.load = load;
+  globalThis.loadStreams = loadStreams;
+})();

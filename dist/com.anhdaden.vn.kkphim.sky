@@ -1,0 +1,134 @@
+(function () {
+  // ============================================================
+  //  KKPhim Provider — SkyStream Plugin
+  //  API: https://phimapi.com/v1/api  (kkphim.vip backend)
+  //  Author: anhdaden (ported by tearrs)
+  // ============================================================
+
+  const API_BASE = "https://phimapi.com/v1/api";
+  const IMG_PROXY = "https://wsrv.nl/?url=";
+  const PHIMIMG  = "https://phimimg.com/";
+
+  async function fetchJson(url) {
+    const res = await fetch(url, { headers: { "User-Agent": "Mozilla/5.0" } });
+    return res.json();
+  }
+
+  function buildPoster(path) {
+    if (!path) return "";
+    if (path.startsWith("http")) return IMG_PROXY + encodeURIComponent(path);
+    return PHIMIMG + path;
+  }
+
+  function resolveType(m) {
+    const t = (m.type || "").toLowerCase();
+    if (t === "hoathinh") return "anime";
+    if (t === "series") return "series";
+    return "movie";
+  }
+
+  function buildItem(m) {
+    return new MultimediaItem({
+      title: m.name || m.origin_name,
+      url: `${API_BASE}/phim/${m.slug}`,
+      posterUrl: buildPoster(m.thumb_url || m.poster_url),
+      type: resolveType(m),
+      year: m.year ? parseInt(m.year) : undefined,
+      score: m.tmdb?.vote_average || undefined,
+      description: m.content || "",
+      status: m.episode_current === "Hoàn Tất" ? "completed" : "ongoing",
+    });
+  }
+
+  // ── getHome ──────────────────────────────────────────────────
+  async function getHome(cb) {
+    try {
+      const [le, bo, anime] = await Promise.all([
+        fetchJson(`${API_BASE}/danh-sach/phim-le?page=1`),
+        fetchJson(`${API_BASE}/danh-sach/phim-bo?page=1`),
+        fetchJson(`${API_BASE}/danh-sach/hoat-hinh?page=1`),
+      ]);
+
+      const leItems   = (le.data?.items   || []).map(buildItem);
+      const boItems   = (bo.data?.items   || []).map(buildItem);
+      const animeItems= (anime.data?.items|| []).map(buildItem);
+
+      cb({
+        success: true,
+        data: {
+          "Trending":    leItems.slice(0, 8),
+          "Phim Lẻ":    leItems,
+          "Phim Bộ":    boItems,
+          "Hoạt Hình":  animeItems,
+        }
+      });
+    } catch (e) {
+      cb({ success: false, error: e.message });
+    }
+  }
+
+  // ── search ───────────────────────────────────────────────────
+  async function search(query, cb) {
+    try {
+      const data = await fetchJson(`${API_BASE}/tim-kiem?keyword=${encodeURIComponent(query)}&page=1`);
+      cb({ success: true, data: (data.data?.items || []).map(buildItem) });
+    } catch (e) {
+      cb({ success: false, error: e.message });
+    }
+  }
+
+  // ── load ─────────────────────────────────────────────────────
+  async function load(url, cb) {
+    try {
+      const data = await fetchJson(url);
+      const m = data.data?.item || {};
+
+      const episodes = [];
+      (m.episodes || []).forEach(server => {
+        (server.server_data || []).forEach((ep, idx) => {
+          episodes.push(new Episode({
+            name: ep.name || `Tập ${idx + 1}`,
+            url: ep.link_m3u8 || ep.link_embed || "",
+            season: 1,
+            episode: parseInt(ep.name) || idx + 1,
+            dubStatus: "subbed",
+          }));
+        });
+      });
+
+      const item = buildItem(m);
+      item.cast = (m.actor || []).map(a => new Actor({ name: a }));
+      item.episodes = episodes;
+      cb({ success: true, data: item });
+    } catch (e) {
+      cb({ success: false, error: e.message });
+    }
+  }
+
+  // ── loadStreams ──────────────────────────────────────────────
+  async function loadStreams(url, cb) {
+    try {
+      if (url.endsWith(".m3u8") || url.includes(".m3u8?")) {
+        cb({ success: true, data: [new StreamResult({ url, quality: "Auto" })] });
+        return;
+      }
+
+      // Handle kkphimplayer embed
+      const res = await fetch(url, { headers: { Referer: "https://kkphim.vip/" } });
+      const html = await res.text();
+      const m3u8 = html.match(/["'](https?:\/\/[^"']+\.m3u8[^"']*)['"]/)?.[1];
+      if (m3u8) {
+        cb({ success: true, data: [new StreamResult({ url: m3u8, quality: "Auto", headers: { Referer: url } })] });
+      } else {
+        cb({ success: false, error: "Không tìm thấy stream" });
+      }
+    } catch (e) {
+      cb({ success: false, error: e.message });
+    }
+  }
+
+  globalThis.getHome = getHome;
+  globalThis.search = search;
+  globalThis.load = load;
+  globalThis.loadStreams = loadStreams;
+})();

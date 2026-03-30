@@ -1,0 +1,150 @@
+(function () {
+  // ============================================================
+  //  NguonC Provider — SkyStream Plugin
+  //  API: https://phim.nguonc.com/api
+  //  Author: anhdaden (ported by tearrs)
+  // ============================================================
+
+  const API_BASE = "https://phim.nguonc.com/api";
+  const IMG_PROXY = "https://wsrv.nl/?url=";
+
+  /** @param {string} url @returns {Promise<any>} */
+  async function fetchJson(url) {
+    const res = await fetch(url, {
+      headers: { "User-Agent": "Mozilla/5.0", "Accept": "application/json" }
+    });
+    return res.json();
+  }
+
+  /** Map NguonC category string → SkyStream type */
+  function resolveType(item) {
+    const name = (item.name || "").toLowerCase();
+    const slug = (item.category || []).map(c => c.slug).join(",");
+    if (slug.includes("hoat-hinh")) return "anime";
+    if (name.includes("tập") || item.current_episode !== item.total_episodes) return "series";
+    return "movie";
+  }
+
+  /** Build a MultimediaItem from NguonC movie object */
+  function buildItem(m) {
+    return new MultimediaItem({
+      title: m.name || m.original_name,
+      url: `${API_BASE}/film/${m.slug}`,
+      posterUrl: m.thumb_url ? IMG_PROXY + encodeURIComponent(m.thumb_url) : "",
+      type: resolveType(m),
+      year: m.year ? parseInt(m.year) : undefined,
+      score: m.imdb_score ? parseFloat(m.imdb_score) : undefined,
+      description: m.description || "",
+      status: m.current_episode === m.total_episodes ? "completed" : "ongoing",
+    });
+  }
+
+  // ── getHome ──────────────────────────────────────────────────
+  async function getHome(cb) {
+    try {
+      const categories = [
+        { label: "Phim Lẻ Mới",  path: "films/danh-sach/phim-le?page=1" },
+        { label: "Phim Bộ Mới",  path: "films/danh-sach/phim-bo?page=1" },
+        { label: "Phim Âu Mỹ",   path: "films/quoc-gia/au-my?page=1" },
+        { label: "Phim Hàn",     path: "films/quoc-gia/han-quoc?page=1" },
+        { label: "Phim Trung",   path: "films/quoc-gia/trung-quoc?page=1" },
+        { label: "Phim Việt",    path: "films/quoc-gia/viet-nam?page=1" },
+        { label: "Hoạt Hình",    path: "films/the-loai/hoat-hinh?page=1" },
+      ];
+
+      const result = {};
+      const trending = [];
+
+      for (const cat of categories) {
+        const data = await fetchJson(`${API_BASE}/${cat.path}`);
+        const items = (data.items || []).map(buildItem);
+        if (trending.length === 0 && items.length > 0) trending.push(...items.slice(0, 6));
+        result[cat.label] = items;
+      }
+
+      result["Trending"] = trending;
+      cb({ success: true, data: result });
+    } catch (e) {
+      cb({ success: false, error: e.message });
+    }
+  }
+
+  // ── search ───────────────────────────────────────────────────
+  async function search(query, cb) {
+    try {
+      const data = await fetchJson(`${API_BASE}/films/search?keyword=${encodeURIComponent(query)}&page=1`);
+      const items = (data.items || []).map(buildItem);
+      cb({ success: true, data: items });
+    } catch (e) {
+      cb({ success: false, error: e.message });
+    }
+  }
+
+  // ── load ─────────────────────────────────────────────────────
+  async function load(url, cb) {
+    try {
+      const data = await fetchJson(url);
+      const m = data.movie || data;
+
+      const episodes = [];
+      const serverList = m.episodes || [];
+
+      for (const server of serverList) {
+        const serverName = server.server_name || "Server";
+        const items = server.items || [];
+        items.forEach((ep, idx) => {
+          episodes.push(new Episode({
+            name: ep.name || `Tập ${idx + 1}`,
+            url: ep.embed || ep.m3u8 || "",
+            season: 1,
+            episode: idx + 1,
+            dubStatus: "subbed",
+          }));
+        });
+      }
+
+      const item = new MultimediaItem({
+        title: m.name || m.original_name,
+        url: url,
+        posterUrl: m.thumb_url ? IMG_PROXY + encodeURIComponent(m.thumb_url) : "",
+        type: resolveType(m),
+        year: m.year ? parseInt(m.year) : undefined,
+        score: m.imdb_score ? parseFloat(m.imdb_score) : undefined,
+        description: m.description || "",
+        status: m.movie_active ? "ongoing" : "completed",
+        cast: (m.actor || []).map(a => new Actor({ name: a })),
+      });
+      item.episodes = episodes;
+      cb({ success: true, data: item });
+    } catch (e) {
+      cb({ success: false, error: e.message });
+    }
+  }
+
+  // ── loadStreams ──────────────────────────────────────────────
+  async function loadStreams(url, cb) {
+    try {
+      // url is either direct m3u8 or embed iframe URL
+      if (url.includes(".m3u8")) {
+        cb({ success: true, data: [new StreamResult({ url, quality: "Auto" })] });
+        return;
+      }
+      // Fetch embed page and extract m3u8
+      const res = await fetch(url, { headers: { Referer: "https://phim.nguonc.com/" } });
+      const html = await res.text();
+      const m3u8Match = html.match(/["'](https?:\/\/[^"']+\.m3u8[^"']*)['"]/);
+      if (m3u8Match) {
+        cb({ success: true, data: [new StreamResult({ url: m3u8Match[1], quality: "Auto", headers: { Referer: url } })] });
+      } else {
+        cb({ success: false, error: "Không tìm thấy stream" });
+      }
+    } catch (e) {
+      cb({ success: false, error: e.message });
+    }
+  }
+
+  globalThis.getHome = getHome;
+  globalThis.search = search;
+  globalThis.load = load;
+  globalThis.loadStreams = loadStreams;
+})();

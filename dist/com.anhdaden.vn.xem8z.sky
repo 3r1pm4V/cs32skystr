@@ -1,0 +1,166 @@
+(function () {
+  // ============================================================
+  //  Xem8z Provider — SkyStream Plugin
+  //  Site: https://xem8z.net  |  Stream: sv1.rophim.mom
+  //  Author: anhdaden (ported by tearrs)
+  // ============================================================
+
+  const BASE      = manifest.baseUrl || "https://xem8z.net";
+  const IMG_PROXY = "https://wsrv.nl/?url=";
+  const STREAM_SV = "https://sv1.rophim.mom";
+
+  async function fetchHtml(url, referer) {
+    const res = await fetch(url, {
+      headers: { "User-Agent": "Mozilla/5.0", Referer: referer || BASE }
+    });
+    return res.text();
+  }
+
+  function buildPoster(src) {
+    if (!src) return "";
+    return src.startsWith("http") ? IMG_PROXY + encodeURIComponent(src) : BASE + src;
+  }
+
+  function parseListPage(html) {
+    const items = [];
+    // Xem8z uses Tailwind — div.space-y-3 .relative style cards
+    const blocks = [...html.matchAll(/href=["']([^"']+\/xem-phim\/[^"']+)['"]/gi)];
+    const imgs   = [...html.matchAll(/src=["']([^"']+\.(?:jpg|png|webp)[^"']*)['"]/gi)];
+    const titles = [...html.matchAll(/<span[^>]+text-sm[^>]+font-semibold[^>]*>([^<]+)<\/span>/gi)];
+
+    blocks.forEach((m, idx) => {
+      const url = m[1].startsWith("http") ? m[1] : BASE + m[1];
+      items.push(new MultimediaItem({
+        title:     titles[idx]?.[1]?.trim() || `Phim ${idx + 1}`,
+        url,
+        posterUrl: buildPoster(imgs[idx]?.[1] || ""),
+        type:      "movie",
+      }));
+    });
+    return items;
+  }
+
+  // ── getHome ──────────────────────────────────────────────────
+  async function getHome(cb) {
+    try {
+      const [le, bo] = await Promise.all([
+        fetchHtml(`${BASE}/danh-sach/phim-le?page=1`),
+        fetchHtml(`${BASE}/danh-sach/phim-bo?page=1`),
+      ]);
+
+      const leItems = parseListPage(le);
+      const boItems = parseListPage(bo);
+      cb({
+        success: true,
+        data: {
+          "Trending": leItems.slice(0, 8),
+          "Phim Lẻ": leItems,
+          "Phim Bộ": boItems,
+        }
+      });
+    } catch (e) {
+      cb({ success: false, error: e.message });
+    }
+  }
+
+  // ── search ───────────────────────────────────────────────────
+  async function search(query, cb) {
+    try {
+      // Xem8z uses phimapi backend for search
+      const res  = await fetch(`https://wsrv.nl/?url=${encodeURIComponent(`https://sv1.rophim.mom/player.php`)}&search=${encodeURIComponent(query)}`);
+      const html = await fetchHtml(`${BASE}/?s=${encodeURIComponent(query)}`);
+      cb({ success: true, data: parseListPage(html) });
+    } catch (e) {
+      cb({ success: false, error: e.message });
+    }
+  }
+
+  // ── load ─────────────────────────────────────────────────────
+  async function load(url, cb) {
+    try {
+      const html = await fetchHtml(url);
+
+      const title  = html.match(/property=og:title[^>]+content=["']([^"']+)['"]/i)?.[1]
+                  || html.match(/<h1[^>]*>([^<]+)<\/h1>/i)?.[1] || "Unknown";
+      const poster = html.match(/property=og:image[^>]+content=["']([^"']+)['"]/i)?.[1]
+                  || html.match(/content=["']([^"']+)['"]\s+property=og:image/i)?.[1];
+
+      // Episode links: a[href*='/xem-phim/']
+      const epLinks = [...html.matchAll(/href=["']([^"']+\/xem-phim\/[^"']+)['"]\s*(?:title=["']([^"']+)['"]\s*)?/gi)];
+
+      const seen = new Set();
+      const episodes = [];
+      epLinks.forEach((m, idx) => {
+        const epUrl = m[1].startsWith("http") ? m[1] : BASE + m[1];
+        if (!seen.has(epUrl)) {
+          seen.add(epUrl);
+          episodes.push(new Episode({
+            name:    m[2]?.trim() || `Tập ${idx + 1}`,
+            url:     epUrl,
+            season:  1,
+            episode: idx + 1,
+            dubStatus: "subbed",
+          }));
+        }
+      });
+
+      const item = new MultimediaItem({
+        title:     title.trim(),
+        url,
+        posterUrl: buildPoster(poster),
+        type:      episodes.length > 1 ? "series" : "movie",
+      });
+      item.episodes = episodes;
+      cb({ success: true, data: item });
+    } catch (e) {
+      cb({ success: false, error: e.message });
+    }
+  }
+
+  // ── loadStreams ──────────────────────────────────────────────
+  async function loadStreams(url, cb) {
+    try {
+      if (url.includes(".m3u8")) {
+        cb({ success: true, data: [new StreamResult({ url, quality: "Auto" })] });
+        return;
+      }
+
+      const html = await fetchHtml(url);
+
+      // Try rophim.mom stream: sv1.rophim.mom/stream/{id}
+      const streamId = html.match(/rophim\.mom\/player\.php\?id=([^"'&\s]+)/i)?.[1];
+      if (streamId) {
+        const streamUrl = `${STREAM_SV}/stream/${streamId}`;
+        cb({ success: true, data: [new StreamResult({ url: streamUrl, quality: "Auto", headers: { Referer: STREAM_SV } })] });
+        return;
+      }
+
+      // anonvideo embed
+      const anonUrl = html.match(/https:\/\/anonvideo\.net\/embed\/([^"'&\s]+)/i)?.[0];
+      if (anonUrl) {
+        const embedHtml = await fetchHtml(anonUrl, url);
+        const m3u8 = embedHtml.match(/["'](https?:\/\/[^"']+\.m3u8[^"']*)['"]/)?.[1];
+        if (m3u8) {
+          cb({ success: true, data: [new StreamResult({ url: m3u8, quality: "Auto", headers: { Referer: anonUrl } })] });
+          return;
+        }
+      }
+
+      // Direct m3u8 fallback
+      const m3u8 = html.match(/["'](https?:\/\/[^"']+\.m3u8[^"']*)['"]/)?.[1];
+      if (m3u8) {
+        cb({ success: true, data: [new StreamResult({ url: m3u8, quality: "Auto", headers: { Referer: url } })] });
+        return;
+      }
+
+      cb({ success: false, error: "Không tìm thấy stream" });
+    } catch (e) {
+      cb({ success: false, error: e.message });
+    }
+  }
+
+  globalThis.getHome = getHome;
+  globalThis.search = search;
+  globalThis.load = load;
+  globalThis.loadStreams = loadStreams;
+})();
