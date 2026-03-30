@@ -2,7 +2,7 @@
   "name": "Vietnamese Movie",
   "packageName": "com.anhdaden.vn",
   "description": "Plugin phim Việt Nam cho SkyStream. Nguồn: https://t.me/cs3vn",
-  "manifestVersion": 1,
+  "manifestVersion": 2,
   "pluginLists": [
     "https://raw.githubusercontent.com/3r1pm4V/cs32skystr/main/dist/plugins.json"
   ]
