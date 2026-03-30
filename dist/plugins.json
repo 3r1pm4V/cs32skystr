@@ -1,156 +1,231 @@
-[
-  {
-    "packageName": "com.anhdaden.vn.nguonc",
-    "name": "NguonC",
-    "version": 17,
-    "baseUrl": "https://phim.nguonc.com",
-    "description": "Phim bộ, phim lẻ, anime vietsub - API chính thức NguonC",
-    "authors": ["anhdaden"],
-    "languages": ["vi"],
-    "categories": ["Movie", "TvSeries", "Anime"],
-    "url": "https://raw.githubusercontent.com/3r1pm4V/cs32skystr/main/dist/com.anhdaden.vn.nguonc.sky"
-  },
-  {
-    "packageName": "com.anhdaden.vn.ophim",
-    "name": "OPhim",
-    "version": 12,
-    "baseUrl": "https://ophim1.com",
-    "description": "Phim bộ, phim lẻ, anime vietsub - OPhim API",
-    "authors": ["anhdaden"],
-    "languages": ["vi"],
-    "categories": ["Movie", "TvSeries", "Anime"],
-    "url": "https://raw.githubusercontent.com/3r1pm4V/cs32skystr/main/dist/com.anhdaden.vn.ophim.sky"
-  },
-  {
-    "packageName": "com.anhdaden.vn.kkphim",
-    "name": "KKPhim",
-    "version": 11,
-    "baseUrl": "https://phimapi.com",
-    "description": "Phim bộ, phim lẻ, anime - KKPhim API",
-    "authors": ["anhdaden"],
-    "languages": ["vi"],
-    "categories": ["Movie", "TvSeries", "Anime"],
-    "url": "https://raw.githubusercontent.com/3r1pm4V/cs32skystr/main/dist/com.anhdaden.vn.kkphim.sky"
-  },
-  {
-    "packageName": "com.anhdaden.vn.bluphim",
-    "name": "BluPhim",
-    "version": 23,
-    "baseUrl": "https://techtnet.com/bluphim.html",
-    "description": "Phim FullHD vietsub - BluPhim",
-    "authors": ["anhdaden"],
-    "languages": ["vi"],
-    "categories": ["Movie", "TvSeries"],
-    "url": "https://raw.githubusercontent.com/3r1pm4V/cs32skystr/main/dist/com.anhdaden.vn.bluphim.sky"
-  },
-  {
-    "packageName": "com.anhdaden.vn.phimmoi",
-    "name": "PhimMoi",
-    "version": 14,
-    "baseUrl": "https://phimmoiplus.net",
-    "description": "Phim bộ, phim lẻ mới nhất",
-    "authors": ["anhdaden"],
-    "languages": ["vi"],
-    "categories": ["Movie", "TvSeries"],
-    "url": "https://raw.githubusercontent.com/3r1pm4V/cs32skystr/main/dist/com.anhdaden.vn.phimmoi.sky"
-  },
-  {
-    "packageName": "com.anhdaden.vn.phimhdc",
-    "name": "PhimHDC",
-    "version": 8,
-    "baseUrl": "https://phimhdc.com",
-    "description": "Phim FullHD vietsub - PhimHDC",
-    "authors": ["anhdaden"],
-    "languages": ["vi"],
-    "categories": ["Movie", "TvSeries"],
-    "url": "https://raw.githubusercontent.com/3r1pm4V/cs32skystr/main/dist/com.anhdaden.vn.phimhdc.sky"
-  },
-  {
-    "packageName": "com.anhdaden.vn.phimlongtieng",
-    "name": "PhimLongTieng",
-    "version": 17,
-    "baseUrl": "https://phimlongtieng.link",
-    "description": "Phim TVB, phim xưa lồng tiếng Việt",
-    "authors": ["anhdaden"],
-    "languages": ["vi"],
-    "categories": ["Movie", "TvSeries"],
-    "url": "https://raw.githubusercontent.com/3r1pm4V/cs32skystr/main/dist/com.anhdaden.vn.phimlongtieng.sky"
-  },
-  {
-    "packageName": "com.anhdaden.vn.xem8z",
-    "name": "Xem8z",
-    "version": 5,
-    "baseUrl": "https://xem8z.net",
-    "description": "Phim bộ, phim lẻ vietsub",
-    "authors": ["anhdaden"],
-    "languages": ["vi"],
-    "categories": ["Movie", "TvSeries"],
-    "url": "https://raw.githubusercontent.com/3r1pm4V/cs32skystr/main/dist/com.anhdaden.vn.xem8z.sky"
-  },
-  {
-    "packageName": "com.anhdaden.vn.holitv",
-    "name": "HoliTV",
-    "version": 3,
-    "baseUrl": "https://holitv.net",
-    "description": "Thuyết minh phim giọng hay - Anime, phim bộ, phim lẻ",
-    "authors": ["anhdaden"],
-    "languages": ["vi"],
-    "categories": ["Movie", "TvSeries", "Anime"],
-    "url": "https://raw.githubusercontent.com/3r1pm4V/cs32skystr/main/dist/com.anhdaden.vn.holitv.sky"
-  },
-  {
-    "packageName": "com.anhdaden.vn.hhtq",
-    "name": "HHTQ",
-    "version": 2,
-    "baseUrl": "https://hhhtq.team",
-    "description": "Hoạt hình Trung Quốc vietsub",
-    "authors": ["anhdaden"],
-    "languages": ["vi"],
-    "categories": ["Anime"],
-    "url": "https://raw.githubusercontent.com/3r1pm4V/cs32skystr/main/dist/com.anhdaden.vn.hhtq.sky"
-  },
-  {
-    "packageName": "com.anhdaden.vn.yanhh3d",
-    "name": "YanHH3D",
-    "version": 24,
-    "baseUrl": "https://yanhh3d.net",
-    "description": "Hoạt hình Trung Quốc thuyết minh",
-    "authors": ["anhdaden"],
-    "languages": ["vi"],
-    "categories": ["Anime"],
-    "url": "https://raw.githubusercontent.com/3r1pm4V/cs32skystr/main/dist/com.anhdaden.vn.yanhh3d.sky"
-  },
-  {
-    "packageName": "com.anhdaden.vn.animehay",
-    "name": "AnimeHay",
-    "version": 13,
-    "baseUrl": "https://animehay.tv",
-    "description": "Anime vietsub - AnimeHay",
-    "authors": ["anhdaden"],
-    "languages": ["vi"],
-    "categories": ["Anime"],
-    "url": "https://raw.githubusercontent.com/3r1pm4V/cs32skystr/main/dist/com.anhdaden.vn.animehay.sky"
-  },
-  {
-    "packageName": "com.anhdaden.vn.animevietsub",
-    "name": "AnimeVietsub",
-    "version": 15,
-    "baseUrl": "http://bit.ly/animevietsubtv",
-    "description": "Anime vietsub - AnimeVietsub",
-    "authors": ["anhdaden"],
-    "languages": ["vi"],
-    "categories": ["Anime"],
-    "url": "https://raw.githubusercontent.com/3r1pm4V/cs32skystr/main/dist/com.anhdaden.vn.animevietsub.sky"
-  },
-  {
-    "packageName": "com.anhdaden.vn.yumeianime",
-    "name": "YumeiAnime",
-    "version": 1,
-    "baseUrl": "https://yumei-anime.com",
-    "description": "Pokemon và Super Sentai vietsub",
-    "authors": ["anhdaden"],
-    "languages": ["vi"],
-    "categories": ["Anime"],
-    "url": "https://raw.githubusercontent.com/3r1pm4V/cs32skystr/main/dist/com.anhdaden.vn.yumeianime.sky"
-  }
-]
+{
+  "schemaVersion": 2,
+  "pluginCount": 14,
+  "lastUpdated": "2024-05-22T08:00:00Z",
+  "plugins": [
+    {
+      "id": "com.anhdaden.vn.nguonc",
+      "name": "NguonC",
+      "version": "1.0.17",
+      "manifest": {
+        "description": "Phim bộ, phim lẻ, anime vietsub - API chính thức NguonC",
+        "authors": ["anhdaden"],
+        "languages": ["vi"],
+        "categories": ["Movie", "TvSeries", "Anime"]
+      },
+      "source": {
+        "baseUrl": "https://phim.nguonc.com",
+        "downloadUrl": "https://raw.githubusercontent.com/3r1pm4V/cs32skystr/main/dist/com.anhdaden.vn.nguonc.sky",
+        "type": "sky_plugin"
+      }
+    },
+    {
+      "id": "com.anhdaden.vn.ophim",
+      "name": "OPhim",
+      "version": "1.0.12",
+      "manifest": {
+        "description": "Phim bộ, phim lẻ, anime vietsub - OPhim API",
+        "authors": ["anhdaden"],
+        "languages": ["vi"],
+        "categories": ["Movie", "TvSeries", "Anime"]
+      },
+      "source": {
+        "baseUrl": "https://ophim1.com",
+        "downloadUrl": "https://raw.githubusercontent.com/3r1pm4V/cs32skystr/main/dist/com.anhdaden.vn.ophim.sky",
+        "type": "sky_plugin"
+      }
+    },
+    {
+      "id": "com.anhdaden.vn.kkphim",
+      "name": "KKPhim",
+      "version": "1.0.11",
+      "manifest": {
+        "description": "Phim bộ, phim lẻ, anime - KKPhim API",
+        "authors": ["anhdaden"],
+        "languages": ["vi"],
+        "categories": ["Movie", "TvSeries", "Anime"]
+      },
+      "source": {
+        "baseUrl": "https://phimapi.com",
+        "downloadUrl": "https://raw.githubusercontent.com/3r1pm4V/cs32skystr/main/dist/com.anhdaden.vn.kkphim.sky",
+        "type": "sky_plugin"
+      }
+    },
+    {
+      "id": "com.anhdaden.vn.bluphim",
+      "name": "BluPhim",
+      "version": "1.0.23",
+      "manifest": {
+        "description": "Phim FullHD vietsub - BluPhim",
+        "authors": ["anhdaden"],
+        "languages": ["vi"],
+        "categories": ["Movie", "TvSeries"]
+      },
+      "source": {
+        "baseUrl": "https://techtnet.com/bluphim.html",
+        "downloadUrl": "https://raw.githubusercontent.com/3r1pm4V/cs32skystr/main/dist/com.anhdaden.vn.bluphim.sky",
+        "type": "sky_plugin"
+      }
+    },
+    {
+      "id": "com.anhdaden.vn.phimmoi",
+      "name": "PhimMoi",
+      "version": "1.0.14",
+      "manifest": {
+        "description": "Phim bộ, phim lẻ mới nhất",
+        "authors": ["anhdaden"],
+        "languages": ["vi"],
+        "categories": ["Movie", "TvSeries"]
+      },
+      "source": {
+        "baseUrl": "https://phimmoiplus.net",
+        "downloadUrl": "https://raw.githubusercontent.com/3r1pm4V/cs32skystr/main/dist/com.anhdaden.vn.phimmoi.sky",
+        "type": "sky_plugin"
+      }
+    },
+    {
+      "id": "com.anhdaden.vn.phimhdc",
+      "name": "PhimHDC",
+      "version": "1.0.8",
+      "manifest": {
+        "description": "Phim FullHD vietsub - PhimHDC",
+        "authors": ["anhdaden"],
+        "languages": ["vi"],
+        "categories": ["Movie", "TvSeries"]
+      },
+      "source": {
+        "baseUrl": "https://phimhdc.com",
+        "downloadUrl": "https://raw.githubusercontent.com/3r1pm4V/cs32skystr/main/dist/com.anhdaden.vn.phimhdc.sky",
+        "type": "sky_plugin"
+      }
+    },
+    {
+      "id": "com.anhdaden.vn.phimlongtieng",
+      "name": "PhimLongTieng",
+      "version": "1.0.17",
+      "manifest": {
+        "description": "Phim TVB, phim xưa lồng tiếng Việt",
+        "authors": ["anhdaden"],
+        "languages": ["vi"],
+        "categories": ["Movie", "TvSeries"]
+      },
+      "source": {
+        "baseUrl": "https://phimlongtieng.link",
+        "downloadUrl": "https://raw.githubusercontent.com/3r1pm4V/cs32skystr/main/dist/com.anhdaden.vn.phimlongtieng.sky",
+        "type": "sky_plugin"
+      }
+    },
+    {
+      "id": "com.anhdaden.vn.xem8z",
+      "name": "Xem8z",
+      "version": "1.0.5",
+      "manifest": {
+        "description": "Phim bộ, phim lẻ vietsub",
+        "authors": ["anhdaden"],
+        "languages": ["vi"],
+        "categories": ["Movie", "TvSeries"]
+      },
+      "source": {
+        "baseUrl": "https://xem8z.net",
+        "downloadUrl": "https://raw.githubusercontent.com/3r1pm4V/cs32skystr/main/dist/com.anhdaden.vn.xem8z.sky",
+        "type": "sky_plugin"
+      }
+    },
+    {
+      "id": "com.anhdaden.vn.holitv",
+      "name": "HoliTV",
+      "version": "1.0.3",
+      "manifest": {
+        "description": "Thuyết minh phim giọng hay - Anime, phim bộ, phim lẻ",
+        "authors": ["anhdaden"],
+        "languages": ["vi"],
+        "categories": ["Movie", "TvSeries", "Anime"]
+      },
+      "source": {
+        "baseUrl": "https://holitv.net",
+        "downloadUrl": "https://raw.githubusercontent.com/3r1pm4V/cs32skystr/main/dist/com.anhdaden.vn.holitv.sky",
+        "type": "sky_plugin"
+      }
+    },
+    {
+      "id": "com.anhdaden.vn.hhtq",
+      "name": "HHTQ",
+      "version": "1.0.2",
+      "manifest": {
+        "description": "Hoạt hình Trung Quốc vietsub",
+        "authors": ["anhdaden"],
+        "languages": ["vi"],
+        "categories": ["Anime"]
+      },
+      "source": {
+        "baseUrl": "https://hhhtq.team",
+        "downloadUrl": "https://raw.githubusercontent.com/3r1pm4V/cs32skystr/main/dist/com.anhdaden.vn.hhtq.sky",
+        "type": "sky_plugin"
+      }
+    },
+    {
+      "id": "com.anhdaden.vn.yanhh3d",
+      "name": "YanHH3D",
+      "version": "1.0.24",
+      "manifest": {
+        "description": "Hoạt hình Trung Quốc thuyết minh",
+        "authors": ["anhdaden"],
+        "languages": ["vi"],
+        "categories": ["Anime"]
+      },
+      "source": {
+        "baseUrl": "https://yanhh3d.net",
+        "downloadUrl": "https://raw.githubusercontent.com/3r1pm4V/cs32skystr/main/dist/com.anhdaden.vn.yanhh3d.sky",
+        "type": "sky_plugin"
+      }
+    },
+    {
+      "id": "com.anhdaden.vn.animehay",
+      "name": "AnimeHay",
+      "version": "1.0.13",
+      "manifest": {
+        "description": "Anime vietsub - AnimeHay",
+        "authors": ["anhdaden"],
+        "languages": ["vi"],
+        "categories": ["Anime"]
+      },
+      "source": {
+        "baseUrl": "https://animehay.tv",
+        "downloadUrl": "https://raw.githubusercontent.com/3r1pm4V/cs32skystr/main/dist/com.anhdaden.vn.animehay.sky",
+        "type": "sky_plugin"
+      }
+    },
+    {
+      "id": "com.anhdaden.vn.animevietsub",
+      "name": "AnimeVietsub",
+      "version": "1.0.15",
+      "manifest": {
+        "description": "Anime vietsub - AnimeVietsub",
+        "authors": ["anhdaden"],
+        "languages": ["vi"],
+        "categories": ["Anime"]
+      },
+      "source": {
+        "baseUrl": "http://bit.ly/animevietsubtv",
+        "downloadUrl": "https://raw.githubusercontent.com/3r1pm4V/cs32skystr/main/dist/com.anhdaden.vn.animevietsub.sky",
+        "type": "sky_plugin"
+      }
+    },
+    {
+      "id": "com.anhdaden.vn.yumeianime",
+      "name": "YumeiAnime",
+      "version": "1.0.1",
+      "manifest": {
+        "description": "Pokemon và Super Sentai vietsub",
+        "authors": ["anhdaden"],
+        "languages": ["vi"],
+        "categories": ["Anime"]
+      },
+      "source": {
+        "baseUrl": "https://yumei-anime.com",
+        "downloadUrl": "https://raw.githubusercontent.com/3r1pm4V/cs32skystr/main/dist/com.anhdaden.vn.yumeianime.sky",
+        "type": "sky_plugin"
+      }
+    }
+  ]
+}
